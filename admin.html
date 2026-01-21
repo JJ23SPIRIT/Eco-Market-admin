@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Access | Campus Marketplace</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+    --forest-green: #013220;
+    --sunset-yellow: #FFD700;
+    --deep-black: #050a05;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--deep-black);
+    color: white;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ===== LOGIN OVERLAY ===== */
+#login-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--deep-black);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.login-box {
+    background: rgba(1, 50, 32, 0.25);
+    border: 1px solid var(--forest-green);
+    padding: 40px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+
+.login-box h1 { font-family: 'Playfair Display', serif; color: var(--sunset-yellow); margin-bottom: 25px; }
+
+.pass-wrapper { position: relative; width: 100%; margin-bottom: 20px; }
+
+.login-box input {
+    width: 100%;
+    max-width: 300px;
+    padding: 15px;
+    padding-right: 45px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--forest-green);
+    border-radius: 8px;
+    color: white;
+    font-size: 1.05rem;
+    outline: none;
+    margin: 0 auto;
+    display: block;
+    text-align: center;
+}
+
+.toggle-btn {
+    position: absolute;
+    right: calc(50% - 140px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: none; border: none; color: var(--sunset-yellow); cursor: pointer; font-size: 1.2rem;
+}
+
+.submit-btn {
+    width: 100%; max-width: 300px; padding: 15px; background: var(--sunset-yellow);
+    color: var(--forest-green); border: none; border-radius: 8px; font-weight: 800;
+    cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
+}
+
+#error-msg { display: none; color: #ff4444; font-size: 0.8rem; margin-top: 15px; }
+
+/* ===== ADMIN CONTENT ===== */
+#admin-content { display: none; padding: 40px; height: 100vh; overflow-y: auto; }
+
+h2 { font-family: 'Playfair Display', serif; color: var(--sunset-yellow); text-align: center; font-size: 2.5rem; margin-bottom: 10px; }
+
+.logout-btn {
+    position: fixed; top: 20px; right: 20px; background: rgba(255,255,255,0.1);
+    border: 1px solid #444; color: #ccc; padding: 8px 15px; border-radius: 5px; cursor: pointer; z-index: 10;
+}
+
+/* Analytics Button */
+.analytics-btn {
+    position: fixed; top: 20px; right: 150px;
+    background: #FFD700; border: none; color: #013220;
+    padding: 8px 15px; border-radius: 5px; cursor: pointer;
+    font-weight: bold; z-index: 10; transition: 0.3s;
+}
+.analytics-btn:hover { background: white; }
+
+/* Search Bar Styling */
+.search-container {
+    max-width: 1200px;
+    margin: 0 auto 20px auto;
+    text-align: center;
+}
+
+#search-input {
+    width: 100%;
+    max-width: 500px;
+    padding: 12px 20px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--forest-green);
+    border-radius: 30px;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    outline: none;
+    transition: 0.3s;
+}
+
+#search-input:focus {
+    border-color: var(--sunset-yellow);
+    background: rgba(255,255,255,0.08);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.1);
+}
+
+.table-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: rgba(1, 50, 32, 0.25);
+    border: 1px solid rgba(1, 50, 32, 0.5);
+    border-radius: 15px;
+    padding: 20px;
+}
+
+table { width: 100%; border-collapse: collapse; }
+th { padding: 15px; text-align: left; color: var(--sunset-yellow); border-bottom: 2px solid var(--forest-green); font-size: 0.8rem; text-transform: uppercase; }
+td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; color: #ddd; }
+.delete-btn { background: #ff4444; border: none; color: white; padding: 8px 12px; border-radius: 5px; cursor: pointer; }
+</style>
+</head>
+
+<body>
+
+<div id="login-overlay">
+    <div class="login-box">
+        <h1>Admin Login</h1>
+        <div class="pass-wrapper">
+            <input type="password" id="pass-input" placeholder="Enter Password" autocomplete="off">
+            <button class="toggle-btn" onclick="toggleVisibility()">👁️</button>
+        </div>
+        <button class="submit-btn" onclick="checkPassword()">Access Dashboard</button>
+        <p id="error-msg">Invalid Password</p>
+    </div>
+</div>
+
+<div id="admin-content">
+    <button class="logout-btn" onclick="logout()">Logout</button>
+    <button class="analytics-btn" onclick="goToAnalytics()">View Analytics</button>
+
+    <h2>Orders Dashboard</h2>
+    
+    <!-- Search Bar -->
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Search by name, item, price, or hostel...">
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Contact</th>
+                    <th>Hostel</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="ordersTable"></tbody>
+        </table>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getFirestore, collection, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDtPxmJUBCweFBswJVflEVuc4jp6-m0BVM",
+    authDomain: "prime-dusk.firebaseapp.com",
+    projectId: "prime-dusk"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const ordersTable = document.getElementById("ordersTable");
+const searchInput = document.getElementById("search-input");
+
+let allOrders = []; // Local cache for searching
+
+window.toggleVisibility = function () {
+    const input = document.getElementById("pass-input");
+    input.type = input.type === "password" ? "text" : "password";
+};
+
+window.checkPassword = function () {
+    const pass = document.getElementById("pass-input").value;
+    if (pass === "123456") {
+        document.getElementById("login-overlay").style.display = "none";
+        document.getElementById("admin-content").style.display = "block";
+        document.body.style.overflow = "auto";
+        loadOrders();
+    } else {
+        document.getElementById("error-msg").style.display = "block";
+    }
+};
+
+window.logout = () => location.reload();
+
+window.goToAnalytics = function() {
+    window.location.href = "analysis_board.html";
+};
+
+// Main function to render table from array
+function renderOrders(ordersArray) {
+    ordersTable.innerHTML = "";
+    ordersArray.forEach(order => {
+        ordersTable.innerHTML += `
+            <tr>
+                <td><strong>${order.name}</strong><br><small>${order.email}</small></td>
+                <td>${order.item}</td>
+                <td>${order.price}</td>
+                <td>${order.number}</td>
+                <td>${order.hostel}</td>
+                <td>${new Date(order.date).toLocaleDateString()}</td>
+                <td><button class="delete-btn" onclick="deleteOrder('${order.id}')">Delete</button></td>
+            </tr>`;
+    });
+}
+
+function loadOrders() {
+    onSnapshot(collection(db, "purchases"), snapshot => {
+        allOrders = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+        filterAndRender(); // Update view with the new data
+    });
+}
+
+// Search / Filter Logic
+function filterAndRender() {
+    const term = searchInput.value.toLowerCase();
+    const filtered = allOrders.filter(o => 
+        o.name.toLowerCase().includes(term) ||
+        o.email.toLowerCase().includes(term) ||
+        o.item.toLowerCase().includes(term) ||
+        o.number.toLowerCase().includes(term) ||
+        o.hostel.toLowerCase().includes(term) ||
+        o.price.toString().toLowerCase().includes(term)
+    );
+    renderOrders(filtered);
+}
+
+searchInput.addEventListener("input", filterAndRender);
+
+window.deleteOrder = async (id) => {
+    if (confirm("Mark order as completed?")) {
+        await deleteDoc(doc(db, "purchases", id));
+    }
+};
+
+document.getElementById("pass-input").value = "";
+</script>
+
+</body>
+</html>

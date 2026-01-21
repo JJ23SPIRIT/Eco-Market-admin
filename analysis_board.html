@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytics Dashboard | Campus Marketplace</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root {
+    --forest-green: #013220;
+    --sunset-yellow: #FFD700;
+    --deep-black: #050a05;
+    --glass: rgba(255, 255, 255, 0.05);
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--deep-black);
+    color: white;
+    margin: 0;
+    padding: 40px;
+}
+
+h2 { font-family: 'Playfair Display', serif; color: var(--sunset-yellow); text-align: center; font-size: 2.5rem; margin-bottom: 40px; }
+
+.back-btn {
+    position: fixed; top: 20px; left: 20px;
+    background: var(--glass); border: 1px solid #444; color: #ccc;
+    padding: 8px 15px; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 0.9rem;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto 40px auto;
+}
+
+.stat-card {
+    background: rgba(1, 50, 32, 0.3);
+    border: 1px solid var(--forest-green);
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+
+.stat-card h3 { font-size: 0.9rem; text-transform: uppercase; color: #888; margin-bottom: 10px; }
+.stat-card p { font-size: 2.5rem; font-weight: 700; color: var(--sunset-yellow); margin: 0; }
+
+/* Charts Layout */
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.chart-card {
+    background: rgba(1, 50, 32, 0.15);
+    border: 1px solid rgba(1, 50, 32, 0.3);
+    border-radius: 15px;
+    padding: 25px;
+}
+
+.chart-card h4 { margin-top: 0; color: var(--sunset-yellow); font-family: 'Playfair Display'; font-size: 1.3rem; }
+
+@media (max-width: 850px) {
+    .charts-grid { grid-template-columns: 1fr; }
+    body { padding: 20px; }
+}
+</style>
+</head>
+<body>
+
+    <a href="admin.html" class="back-btn">← Back to Orders</a>
+
+    <h2>Business Analytics</h2>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Total Orders</h3>
+            <p id="total-orders">0</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Revenue</h3>
+            <p id="total-revenue">₵0.00</p>
+        </div>
+    </div>
+
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h4>Sales by Item</h4>
+            <canvas id="itemChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h4>Orders per Hostel</h4>
+            <canvas id="hostelChart"></canvas>
+        </div>
+    </div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDtPxmJUBCweFBswJVflEVuc4jp6-m0BVM",
+    authDomain: "prime-dusk.firebaseapp.com",
+    projectId: "prime-dusk"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let itemChart, hostelChart;
+
+// Initialize Charts
+function initCharts() {
+    const ctxItem = document.getElementById('itemChart').getContext('2d');
+    itemChart = new Chart(ctxItem, {
+        type: 'bar',
+        data: { labels: [], datasets: [{ label: 'Units Sold', data: [], backgroundColor: '#FFD700' }] },
+        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#222' } } } }
+    });
+
+    const ctxHostel = document.getElementById('hostelChart').getContext('2d');
+    hostelChart = new Chart(ctxHostel, {
+        type: 'doughnut',
+        data: { labels: [], datasets: [{ data: [], backgroundColor: ['#013220', '#FFD700', '#ffffff', '#2a5d44', '#777'] }] },
+        options: { plugins: { legend: { position: 'bottom', labels: { color: '#ccc' } } } }
+    });
+}
+
+function processData(docs) {
+    let totalRevenue = 0;
+    let itemsMap = {};
+    let hostelsMap = {};
+
+    docs.forEach(docSnap => {
+        const d = docSnap.data();
+        
+        // Revenue Calculation (strip currency symbol)
+        const priceNum = parseFloat(d.price.replace(/[^0-9.]/g, '')) || 0;
+        totalRevenue += priceNum;
+
+        // Inventory Count
+        itemsMap[d.item] = (itemsMap[d.item] || 0) + 1;
+
+        // Hostel Count
+        hostelsMap[d.hostel] = (hostelsMap[d.hostel] || 0) + 1;
+    });
+
+    // Update UI
+    document.getElementById('total-orders').innerText = docs.length;
+    document.getElementById('total-revenue').innerText = `₵${totalRevenue.toLocaleString()}`;
+
+    // Update Item Chart
+    itemChart.data.labels = Object.keys(itemsMap);
+    itemChart.data.datasets[0].data = Object.values(itemsMap);
+    itemChart.update();
+
+    // Update Hostel Chart
+    hostelChart.data.labels = Object.keys(hostelsMap);
+    hostelChart.data.datasets[0].data = Object.values(hostelsMap);
+    hostelChart.update();
+}
+
+// Start
+initCharts();
+onSnapshot(collection(db, "purchases"), snapshot => {
+    processData(snapshot.docs);
+});
+</script>
+</body>
+</html>
