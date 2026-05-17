@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Completed Orders | EcoMarket</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --forest: #013220; --gold: #FFD700; --black: #050a05; --glass: rgba(255, 255, 255, 0.03); }
+        body { font-family: 'Poppins', sans-serif; background: var(--black); color: white; margin: 0; }
+
+        .admin-nav { 
+            background: var(--forest); padding: 15px 5%; display: flex; 
+            justify-content: space-between; align-items: center; 
+            border-bottom: 1px solid var(--gold); position: sticky; top: 0; z-index: 100;
+        }
+        .nav-logo { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.4rem; }
+        .nav-links { display: flex; gap: 15px; }
+        .nav-item { 
+            text-decoration: none; color: white; padding: 10px 20px; 
+            background: rgba(255,255,255,0.05); border-radius: 8px; font-size: 0.8rem;
+        }
+
+        .content { padding: 40px 5%; }
+        h2 { font-family: 'Playfair Display', serif; color: var(--gold); text-align: center; margin-bottom: 30px; }
+
+        /* Search Bar Styling */
+        .search-container { text-align: center; margin-bottom: 30px; }
+        #search-input { 
+            width: 100%; max-width: 600px; padding: 15px 25px; 
+            background: var(--glass); border: 1px solid var(--forest); 
+            border-radius: 35px; color: white; outline: none; 
+            transition: 0.3s;
+        }
+        #search-input:focus { border-color: var(--gold); box-shadow: 0 0 15px rgba(255, 215, 0, 0.1); }
+
+        .table-container { background: var(--glass); border-radius: 20px; padding: 25px; border: 1px solid rgba(255,215,0,0.1); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th { padding: 15px; text-align: left; color: var(--gold); border-bottom: 2px solid var(--forest); font-size: 0.75rem; text-transform: uppercase; }
+        td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
+
+        .item-wrapper { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .item-thumb { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; border: 1px solid rgba(255,215,0,0.2); }
+        
+        .status-pill { background: #25D366; color: #000; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <nav class="admin-nav">
+        <div class="nav-logo">EcoMarket Archive</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-item">⬅ Back to Active Orders</a>
+            <a href="add_items.html" class="nav-item">＋ Add New Item</a>
+            <a href="inventory.html" class="nav-item">📋 Inventory List</a>
+            <a href="completed_orders.html" class="nav-item" style="background: var(--gold); color: var(--forest);">✅ Completed Orders</a>
+            <a href="#" class="nav-item" onclick="location.reload()">🔒 Logout</a>
+        </div>
+    </nav>
+
+    <div class="content">
+        <h2>Completed Sales History</h2>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search by customer name, phone, or sales ID...">
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sales ID</th>
+                        <th>Date Completed</th>
+                        <th>Customer</th>
+                        <th>Items Supplied</th>
+                        <th>Total Paid</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="completedTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyDtPxmJUBCweFBswJVflEVuc4jp6-m0BVM", authDomain: "prime-dusk.firebaseapp.com", projectId: "prime-dusk" };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let allRecords = [];
+
+        onSnapshot(collection(db, "completed_orders"), snapshot => {
+            allRecords = snapshot.docs.map(d => d.data());
+            
+            // Sort by most recently completed
+            allRecords.sort((a,b) => {
+                const dateA = new Date(a.completedAt || a.timestamp);
+                const dateB = new Date(b.completedAt || b.timestamp);
+                return dateB - dateA;
+            });
+
+            renderTable(allRecords);
+        });
+
+        function renderTable(records) {
+            const table = document.getElementById('completedTable');
+            table.innerHTML = "";
+
+            records.forEach(order => {
+                const rawDate = order.completedAt || order.timestamp;
+                const date = new Date(rawDate).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+                
+                let itemsHtml = order.items.map(i => `
+                    <div class="item-wrapper">
+                        <img src="${i.image}" class="item-thumb" onerror="this.src='https://via.placeholder.com/40'">
+                        <span>${i.name} (x${i.qty})</span>
+                    </div>
+                `).join('');
+
+                table.innerHTML += `
+                    <tr>
+                        <td style="color: var(--gold); font-weight: bold; font-family: monospace;">${order.salesID || 'N/A'}</td>
+                        <td style="color: #888;">${date}</td>
+                        <td>
+                            <b>${order.customer.name}</b><br>
+                            <small>${order.customer.phone}</small>
+                        </td>
+                        <td>${itemsHtml}</td>
+                        <td style="color: var(--gold); font-weight: bold;">₵${order.totalAmount.toFixed(2)}</td>
+                        <td><span class="status-pill">FULFILLED</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Search Logic
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = allRecords.filter(order => 
+                (order.customer.name && order.customer.name.toLowerCase().includes(term)) ||
+                (order.customer.phone && order.customer.phone.includes(term)) ||
+                (order.salesID && order.salesID.toLowerCase().includes(term))
+            );
+            renderTable(filtered);
+        });
+    </script>
+</body>
+</html>

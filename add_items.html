@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product | Multi-Admin Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --forest-green: #013220; --sunset-yellow: #FFD700; --deep-black: #050a05;
+            --glass: rgba(255, 255, 255, 0.03); --border: rgba(255, 215, 0, 0.2);
+            --input-bg: rgba(0, 0, 0, 0.3);
+        }
+
+        body { font-family: 'Poppins', sans-serif; background: var(--deep-black); color: white; margin: 0; }
+
+        /* Unified Rectangular Menu Bar */
+        .admin-nav { 
+            background: var(--forest-green); padding: 15px 5%; display: flex; 
+            justify-content: space-between; align-items: center; 
+            border-bottom: 1px solid var(--sunset-yellow); position: sticky; top: 0; z-index: 100;
+        }
+        .nav-logo { font-family: 'Playfair Display', serif; color: var(--sunset-yellow); font-size: 1.4rem; font-weight: 700; }
+        .nav-links { display: flex; gap: 15px; }
+        .nav-item { 
+            text-decoration: none; color: white; padding: 10px 20px; 
+            background: rgba(255,255,255,0.05); border-radius: 8px; 
+            font-size: 0.8rem; font-weight: 600; transition: 0.3s;
+        }
+        .nav-item:hover { background: var(--sunset-yellow); color: var(--forest-green); }
+
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        .admin-card { background: var(--glass); border: 1px solid var(--border); border-radius: 24px; padding: 35px; backdrop-filter: blur(15px); }
+
+        .form-section { margin-bottom: 35px; }
+        .section-title { display: flex; align-items: center; gap: 10px; color: var(--sunset-yellow); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-bottom: 20px; }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+        .grid-row { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        .input-group { margin-bottom: 20px; display: flex; flex-direction: column; }
+        .input-group label { font-size: 0.75rem; color: #aaa; margin-bottom: 8px; }
+        
+        input, select, textarea { background: var(--input-bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px; color: white; outline: none; transition: 0.3s; }
+        input:focus, select:focus { border-color: var(--sunset-yellow); }
+
+        .cat-toolbar { display: flex; gap: 10px; margin-top: 10px; }
+        .cat-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: #ccc; cursor: pointer; font-size: 0.7rem; }
+        .cat-btn:hover { color: var(--sunset-yellow); border-color: var(--sunset-yellow); }
+
+        .file-upload-box { border: 2px dashed var(--border); border-radius: 15px; padding: 25px; text-align: center; cursor: pointer; display: block; }
+        #file-input { display: none; }
+        #img-preview { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; display: none; margin: 10px auto; border: 1px solid var(--sunset-yellow); }
+
+        #progress-container { width: 100%; background: #222; border-radius: 10px; height: 6px; margin-top: 15px; display: none; overflow: hidden; }
+        #progress-bar { width: 0%; background: var(--sunset-yellow); height: 100%; transition: 0.3s; }
+
+        .save-btn { width: 100%; padding: 18px; background: var(--sunset-yellow); color: var(--forest-green); border: none; border-radius: 15px; font-weight: 800; cursor: pointer; text-transform: uppercase; margin-top: 20px; }
+
+        @media (max-width: 768px) { .grid-row { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <nav class="admin-nav">
+        <div class="nav-logo">EcoMarket Manager</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-item">⬅ Active Orders</a>
+            <a href="add_items.html" class="nav-item" style="background: var(--sunset-yellow); color: var(--forest-green);">＋ Add New Item</a>
+            <a href="inventory.html" class="nav-item">📋 Inventory List</a>
+            <a href="completed_orders.html" class="nav-item">✅ Completed Orders</a>
+            <a href="#" class="nav-item" onclick="location.reload()">🔒 Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="admin-card">
+            <!-- 1. Identity -->
+            <div class="form-section">
+                <div class="section-title">Identity & Info</div>
+                <div class="grid-row">
+                    <div class="input-group">
+                        <label>Item ID (Auto)</label>
+                        <input type="text" id="prod-id" readonly style="color: var(--sunset-yellow); font-weight: bold;">
+                    </div>
+                    <div class="input-group">
+                        <label>Product Name</label>
+                        <input type="text" id="prod-name" placeholder="e.g. Luxury Handbag">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Description (Details for Customers)</label>
+                    <textarea id="prod-desc" rows="2" placeholder="Describe the material, size, etc."></textarea>
+                </div>
+            </div>
+
+            <!-- 2. Logistics & Stock -->
+            <div class="form-section">
+                <div class="section-title">Pricing & Inventory</div>
+                <div class="grid-row">
+                    <div class="input-group">
+                        <label>Price (₵)</label>
+                        <input type="number" id="prod-price" placeholder="0.00">
+                    </div>
+                    <div class="input-group">
+                        <label>Stock Level</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="number" id="prod-stock" value="1" style="flex: 1;">
+                            <label style="display: flex; align-items: center; gap: 5px; font-size: 0.7rem; background: var(--input-bg); padding: 0 10px; border-radius: 12px; border: 1px solid var(--border);">
+                                <input type="checkbox" id="prod-unlimited"> Infinite
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Select Category</label>
+                    <select id="prod-category"></select>
+                    <div class="cat-toolbar">
+                        <button class="cat-btn" onclick="addNewCategory()">+ Add New Category</button>
+                        <button class="cat-btn del" onclick="removeCategory()">- Remove Selected</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Visuals -->
+            <div class="form-section">
+                <div class="section-title">Media Upload</div>
+                <label class="file-upload-box" for="file-input">
+                    <div id="prompt-text">Click to upload product image</div>
+                    <img id="img-preview" src="#">
+                    <div id="progress-container"><div id="progress-bar"></div></div>
+                </label>
+                <input type="file" id="file-input" accept="image/*">
+            </div>
+
+            <button class="save-btn" id="save-btn">Publish Product</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyDtPxmJUBCweFBswJVflEVuc4jp6-m0BVM", 
+            authDomain: "prime-dusk.firebaseapp.com", 
+            projectId: "prime-dusk",
+            storageBucket: "prime-dusk.firebasestorage.app" 
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // Multi-Admin: Identify User
+        const userPrefix = localStorage.getItem('eco_user_prefix');
+        if(!userPrefix) { 
+            alert("No active session found. Redirecting to login..."); 
+            window.location.href = 'index.html'; 
+        }
+
+        // 1. Generate Product ID
+        const pID = 'PRD-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+        document.getElementById('prod-id').value = pID;
+
+        // 2. Manage Dynamic Categories: userPrefix_categories
+        const catCollection = `${userPrefix}_categories`;
+        onSnapshot(collection(db, catCollection), snap => {
+            const select = document.getElementById('prod-category');
+            select.innerHTML = snap.docs.map(d => `<option value="${d.data().name}" data-id="${d.id}">${d.data().name}</option>`).join('');
+        });
+
+        window.addNewCategory = async () => {
+            const n = prompt("Enter Category Name:");
+            if(n) await addDoc(collection(db, catCollection), { name: n });
+        };
+
+        window.removeCategory = async () => {
+            const sel = document.getElementById('prod-category');
+            const id = sel.options[sel.selectedIndex]?.dataset.id;
+            if(id && confirm(`Remove category "${sel.value}"?`)) await deleteDoc(doc(db, catCollection, id));
+        };
+
+        // 3. Image Selection
+        let selectedFile;
+        document.getElementById('file-input').onchange = e => {
+            selectedFile = e.target.files[0];
+            if(selectedFile) {
+                const reader = new FileReader();
+                reader.onload = x => {
+                    const img = document.getElementById('img-preview');
+                    img.src = x.target.result; img.style.display = "block";
+                    document.getElementById('prompt-text').innerText = selectedFile.name;
+                }
+                reader.readAsDataURL(selectedFile);
+            }
+        };
+
+        // 4. Save Product to Dynamic Collection: userPrefix_products
+        document.getElementById('save-btn').onclick = async () => {
+            const name = document.getElementById('prod-name').value;
+            const price = document.getElementById('prod-price').value;
+            const btn = document.getElementById('save-btn');
+
+            if(!name || !price || !selectedFile) {
+                alert("Missing Name, Price, or Image!"); return;
+            }
+
+            btn.disabled = true; btn.innerText = "Uploading Media...";
+
+            // Media stored in subfolder by User Prefix
+            const storageRef = ref(storage, `${userPrefix}/products/${pID}`);
+            const uploadTask = uploadBytesResumable(storageRef, selectedFile);
+            document.getElementById('progress-container').style.display = "block";
+
+            uploadTask.on('state_changed', 
+                (snap) => {
+                    const progress = (snap.bytesTransferred / snap.totalBytes) * 100;
+                    document.getElementById('progress-bar').style.width = progress + '%';
+                }, 
+                (err) => { alert(err.message); btn.disabled = false; }, 
+                async () => {
+                    const url = await getDownloadURL(uploadTask.snapshot.ref);
+                    const productCollection = `${userPrefix}_products`;
+                    
+                    await addDoc(collection(db, productCollection), {
+                        productID: pID,
+                        name: name,
+                        price: parseFloat(price),
+                        stock: parseInt(document.getElementById('prod-stock').value),
+                        unlimited: document.getElementById('prod-unlimited').checked,
+                        category: document.getElementById('prod-category').value,
+                        description: document.getElementById('prod-desc').value,
+                        image: url,
+                        createdAt: new Date().toISOString()
+                    });
+
+                    alert("Product Published to your shop!");
+                    location.reload();
+                }
+            );
+        };
+    </script>
+</body>
+</html>

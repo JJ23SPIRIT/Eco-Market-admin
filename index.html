@@ -1,181 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Access | Campus Marketplace</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-<style>
-:root {
-    --forest-green: #013220;
-    --sunset-yellow: #FFD700;
-    --deep-black: #050a05;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | EcoMarket Multi-Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --forest: #013220; --gold: #FFD700; --black: #050a05; --glass: rgba(255, 255, 255, 0.03); }
+        
+        body { font-family: 'Poppins', sans-serif; background: var(--black); color: white; margin: 0; overflow-x: hidden; }
 
-body {
-    font-family: 'Poppins', sans-serif;
-    background: var(--deep-black);
-    color: white;
-    margin: 0;
-    height: 100vh;
-    overflow: hidden;
-}
+        /* Login Overlay Updated for User/Pass */
+        #login-overlay { position: fixed; inset: 0; background: var(--black); display: flex; justify-content: center; align-items: center; z-index: 10000; }
+        .login-box { background: rgba(1, 50, 32, 0.2); padding: 40px; border-radius: 20px; border: 1px solid var(--forest); text-align: center; width: 100%; max-width: 400px; backdrop-filter: blur(10px); }
+        .login-box h1 { font-family: 'Playfair Display', serif; color: var(--gold); margin-bottom: 25px; }
+        .login-box input { width: 90%; padding: 14px; margin-bottom: 15px; background: rgba(0,0,0,0.4); border: 1px solid var(--forest); color: white; border-radius: 10px; text-align: center; outline: none; }
+        .submit-btn { width: 90%; padding: 15px; background: var(--gold); color: var(--forest); border: none; border-radius: 10px; font-weight: 800; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
 
-/* ===== LOGIN OVERLAY ===== */
-#login-overlay {
-    position: fixed;
-    inset: 0;
-    background: var(--deep-black);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
+        /* Rectangular Menu Bar */
+        .admin-nav { 
+            background: var(--forest); padding: 15px 5%; display: flex; 
+            justify-content: space-between; align-items: center; 
+            border-bottom: 1px solid var(--gold); position: sticky; top: 0; z-index: 100;
+        }
+        .nav-logo { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.4rem; font-weight: 700; }
+        .nav-links { display: flex; gap: 12px; align-items: center; }
+        .nav-item { 
+            text-decoration: none; color: white; padding: 10px 18px; 
+            background: rgba(255,255,255,0.05); border-radius: 8px; 
+            font-size: 0.75rem; font-weight: 600; transition: 0.3s;
+        }
+        .nav-item:hover { background: var(--gold); color: var(--forest); }
 
-.login-box {
-    background: rgba(1, 50, 32, 0.25);
-    border: 1px solid var(--forest-green);
-    padding: 40px;
-    border-radius: 20px;
-    width: 100%;
-    max-width: 420px;
-    text-align: center;
-    backdrop-filter: blur(10px);
-}
+        /* Profile Button Top Right */
+        .profile-btn {
+            background: var(--gold); color: var(--forest); width: 40px; height: 40px; 
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-weight: bold; cursor: pointer; border: 2px solid transparent; transition: 0.3s;
+        }
+        .profile-btn:hover { background: white; border-color: var(--gold); }
 
-.login-box h1 { font-family: 'Playfair Display', serif; color: var(--sunset-yellow); margin-bottom: 25px; }
+        /* Main Content */
+        #admin-content { display: none; padding: 40px 5%; }
+        h2 { font-family: 'Playfair Display', serif; color: var(--gold); text-align: center; font-size: 2rem; }
 
-.pass-wrapper { position: relative; width: 100%; margin-bottom: 20px; }
+        .search-container { text-align: center; margin: 30px 0; }
+        #search-input { width: 100%; max-width: 600px; padding: 15px 25px; background: var(--glass); border: 1px solid var(--forest); border-radius: 35px; color: white; outline: none; }
 
-.login-box input {
-    width: 100%;
-    max-width: 300px;
-    padding: 15px;
-    padding-right: 45px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid var(--forest-green);
-    border-radius: 8px;
-    color: white;
-    font-size: 1.05rem;
-    outline: none;
-    margin: 0 auto;
-    display: block;
-    text-align: center;
-}
+        .table-container { background: var(--glass); border-radius: 20px; padding: 25px; border: 1px solid rgba(255,215,0,0.1); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th { padding: 15px; text-align: left; color: var(--gold); border-bottom: 2px solid var(--forest); font-size: 0.75rem; text-transform: uppercase; }
+        td { padding: 20px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: middle; }
 
-.toggle-btn {
-    position: absolute;
-    right: calc(50% - 140px);
-    top: 50%;
-    transform: translateY(-50%);
-    background: none; border: none; color: var(--sunset-yellow); cursor: pointer; font-size: 1.2rem;
-}
+        .item-wrapper { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; background: rgba(255,255,255,0.03); padding: 5px; border-radius: 8px; }
+        .item-thumb { width: 50px; height: 50px; border-radius: 6px; object-fit: cover; border: 1px solid rgba(255,215,0,0.3); }
+        .item-info b { font-size: 0.85rem; color: #ddd; }
+        .item-info small { color: var(--gold); font-weight: bold; }
 
-.submit-btn {
-    width: 100%; max-width: 300px; padding: 15px; background: var(--sunset-yellow);
-    color: var(--forest-green); border: none; border-radius: 8px; font-weight: 800;
-    cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
-}
-
-#error-msg { display: none; color: #ff4444; font-size: 0.8rem; margin-top: 15px; }
-
-/* ===== ADMIN CONTENT ===== */
-#admin-content { display: none; padding: 40px; height: 100vh; overflow-y: auto; }
-
-h2 { font-family: 'Playfair Display', serif; color: var(--sunset-yellow); text-align: center; font-size: 2.5rem; margin-bottom: 10px; }
-
-.logout-btn {
-    position: fixed; top: 20px; right: 20px; background: rgba(255,255,255,0.1);
-    border: 1px solid #444; color: #ccc; padding: 8px 15px; border-radius: 5px; cursor: pointer; z-index: 10;
-}
-
-/* Analytics Button */
-.analytics-btn {
-    position: fixed; top: 20px; right: 150px;
-    background: #FFD700; border: none; color: #013220;
-    padding: 8px 15px; border-radius: 5px; cursor: pointer;
-    font-weight: bold; z-index: 10; transition: 0.3s;
-}
-.analytics-btn:hover { background: white; }
-
-/* Search Bar Styling */
-.search-container {
-    max-width: 1200px;
-    margin: 0 auto 20px auto;
-    text-align: center;
-}
-
-#search-input {
-    width: 100%;
-    max-width: 500px;
-    padding: 12px 20px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid var(--forest-green);
-    border-radius: 30px;
-    color: white;
-    font-family: 'Poppins', sans-serif;
-    outline: none;
-    transition: 0.3s;
-}
-
-#search-input:focus {
-    border-color: var(--sunset-yellow);
-    background: rgba(255,255,255,0.08);
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.1);
-}
-
-.table-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    background: rgba(1, 50, 32, 0.25);
-    border: 1px solid rgba(1, 50, 32, 0.5);
-    border-radius: 15px;
-    padding: 20px;
-}
-
-table { width: 100%; border-collapse: collapse; }
-th { padding: 15px; text-align: left; color: var(--sunset-yellow); border-bottom: 2px solid var(--forest-green); font-size: 0.8rem; text-transform: uppercase; }
-td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; color: #ddd; }
-.delete-btn { background: #ff4444; border: none; color: white; padding: 8px 12px; border-radius: 5px; cursor: pointer; }
-</style>
+        .action-btns { display: flex; gap: 10px; }
+        .btn-wa { background: #25D366; color: white; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-size: 0.75rem; font-weight: bold; }
+        .btn-del { background: #ff4444; border: none; color: white; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; }
+    </style>
 </head>
-
 <body>
 
 <div id="login-overlay">
     <div class="login-box">
-        <h1>Admin Login</h1>
-        <div class="pass-wrapper">
-            <input type="password" id="pass-input" placeholder="Enter Password" autocomplete="off">
-            <button class="toggle-btn" onclick="toggleVisibility()">👁️</button>
-        </div>
-        <button class="submit-btn" onclick="checkPassword()">Access Dashboard</button>
-        <p id="error-msg">Invalid Password</p>
+        <h1 id="login-title">Admin Vault</h1>
+        <input type="text" id="user-input" placeholder="Username (e.g. user1)">
+        <input type="password" id="pass-input" placeholder="Password">
+        <button class="submit-btn" onclick="checkAuth()">Authorize Access</button>
     </div>
 </div>
 
 <div id="admin-content">
-    <button class="logout-btn" onclick="logout()">Logout</button>
-    <button class="analytics-btn" onclick="goToAnalytics()">View Analytics</button>
+    <nav class="admin-nav">
+        <div class="nav-logo" id="display-biz-name">EcoMarket Admin</div>
+        <div class="nav-links">
+            <a href="add_items.html" class="nav-item">＋ Add Item</a>
+            <a href="inventory.html" class="nav-item">📋 Inventory</a>
+            <a href="completed_orders.html" class="nav-item">✅ History</a>
+            <a href="#" class="nav-item" onclick="location.reload()">🔒 Logout</a>
+            <!-- Profile Button -->
+            <div class="profile-btn" onclick="window.location.href='profile.html'" id="profile-initial">A</div>
+        </div>
+    </nav>
 
-    <h2>Orders Dashboard</h2>
-    
-    <!-- Search Bar -->
+    <h2>Active Orders</h2>
+
     <div class="search-container">
-        <input type="text" id="search-input" placeholder="Search by name, item, price, or hostel...">
+        <input type="text" id="search-input" placeholder="Search by customer name or phone...">
     </div>
 
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th>Customer</th>
-                    <th>Product</th>
-                    <th>Price</th>
-                    <th>Contact</th>
-                    <th>Hostel</th>
+                    <th>Sales ID</th>
                     <th>Date</th>
-                    <th>Action</th>
+                    <th>Customer Info</th>
+                    <th>Purchased Items</th>
+                    <th>Total Pay</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody id="ordersTable"></tbody>
@@ -185,92 +111,138 @@ td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getFirestore, collection, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, doc, deleteDoc, addDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyDtPxmJUBCweFBswJVflEVuc4jp6-m0BVM",
-    authDomain: "prime-dusk.firebaseapp.com",
-    projectId: "prime-dusk"
-};
-
+const firebaseConfig = { apiKey: "AIzaSyDtPxmJUBCweFBswJVflEVuc4jp6-m0BVM", authDomain: "prime-dusk.firebaseapp.com", projectId: "prime-dusk" };
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const ordersTable = document.getElementById("ordersTable");
-const searchInput = document.getElementById("search-input");
 
-let allOrders = []; // Local cache for searching
+let allOrders = [];
+let activePrefix = ""; // This will store the username (e.g. user1)
 
-window.toggleVisibility = function () {
-    const input = document.getElementById("pass-input");
-    input.type = input.type === "password" ? "text" : "password";
-};
+window.checkAuth = async () => {
+    const user = document.getElementById('user-input').value.toLowerCase();
+    const pass = document.getElementById('pass-input').value;
+    const btn = document.querySelector('.submit-btn');
 
-window.checkPassword = function () {
-    const pass = document.getElementById("pass-input").value;
-    if (pass === "123456") {
-        document.getElementById("login-overlay").style.display = "none";
-        document.getElementById("admin-content").style.display = "block";
-        document.body.style.overflow = "auto";
-        loadOrders();
-    } else {
-        document.getElementById("error-msg").style.display = "block";
+    if(!user || !pass) { alert("Please enter credentials"); return; }
+    
+    btn.innerText = "Verifying...";
+    
+    try {
+        // 1. Fetch user doc from 'users' collection using the username
+        const userRef = doc(db, "users", user);
+        const userSnap = await getDoc(userRef);
+
+        if(userSnap.exists() && userSnap.data().password === pass) {
+            const data = userSnap.data();
+            activePrefix = data.username;
+            
+            // 2. Set UI details
+            document.getElementById('display-biz-name').innerText = data.business.name;
+            document.getElementById('profile-initial').innerText = data.personal.fname[0];
+            
+            // 3. Store prefix in session for other pages (Add item, Inventory etc)
+            localStorage.setItem('eco_user_prefix', activePrefix);
+            
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('admin-content').style.display = 'block';
+            
+            loadOrders();
+        } else {
+            alert("Access Denied: Invalid Username or Password");
+            btn.innerText = "Authorize Access";
+        }
+    } catch (e) {
+        alert("Connection Error");
+        btn.innerText = "Authorize Access";
     }
 };
-
-window.logout = () => location.reload();
-
-window.goToAnalytics = function() {
-    window.location.href = "analysis_board.html";
-};
-
-// Main function to render table from array
-function renderOrders(ordersArray) {
-    ordersTable.innerHTML = "";
-    ordersArray.forEach(order => {
-        ordersTable.innerHTML += `
-            <tr>
-                <td><strong>${order.name}</strong><br><small>${order.email}</small></td>
-                <td>${order.item}</td>
-                <td>${order.price}</td>
-                <td>${order.number}</td>
-                <td>${order.hostel}</td>
-                <td>${new Date(order.date).toLocaleDateString()}</td>
-                <td><button class="delete-btn" onclick="deleteOrder('${order.id}')">Delete</button></td>
-            </tr>`;
-    });
-}
 
 function loadOrders() {
-    onSnapshot(collection(db, "purchases"), snapshot => {
-        allOrders = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
-        filterAndRender(); // Update view with the new data
+    // Dynamic Collection Name: prefix + _orders
+    const collectionName = `${activePrefix}_orders`;
+    
+    onSnapshot(collection(db, collectionName), snapshot => {
+        allOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        allOrders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        render();
     });
 }
 
-// Search / Filter Logic
-function filterAndRender() {
-    const term = searchInput.value.toLowerCase();
+function render() {
+    const term = document.getElementById('search-input').value.toLowerCase();
+    const table = document.getElementById('ordersTable');
+    table.innerHTML = "";
+
     const filtered = allOrders.filter(o => 
-        o.name.toLowerCase().includes(term) ||
-        o.email.toLowerCase().includes(term) ||
-        o.item.toLowerCase().includes(term) ||
-        o.number.toLowerCase().includes(term) ||
-        o.hostel.toLowerCase().includes(term) ||
-        o.price.toString().toLowerCase().includes(term)
+        o.customer.name.toLowerCase().includes(term) || 
+        o.customer.phone.includes(term)
     );
-    renderOrders(filtered);
+
+    filtered.forEach(order => {
+        const date = new Date(order.timestamp).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        
+        let itemsHtml = "";
+        order.items.forEach(item => {
+            itemsHtml += `
+                <div class="item-wrapper">
+                    <img src="${item.image}" class="item-thumb" onerror="this.src='https://via.placeholder.com/50'">
+                    <div class="item-info">
+                        <b>${item.name}</b><br>
+                        <small>Qty: ${item.qty} | ₵${item.price}</small>
+                    </div>
+                </div>
+            `;
+        });
+
+        table.innerHTML += `
+            <tr>
+                <td style="color: var(--gold); font-weight: bold; font-family: monospace;">${order.salesID || 'N/A'}</td>
+                <td style="color: #666; font-size: 0.8rem;">${date}</td>
+                <td class="cust-cell">
+                    <b>${order.customer.name}</b>
+                    <span>${order.customer.phone}</span><br>
+                    <small style="color: var(--gold)">${order.customer.gender}</small>
+                </td>
+                <td>${itemsHtml}</td>
+                <td style="color: var(--gold); font-weight: bold; font-size: 1.1rem;">₵${order.totalAmount.toFixed(2)}</td>
+                <td>
+                    <div class="action-btns">
+                        <a href="https://wa.me/233${order.customer.phone.substring(1)}" target="_blank" class="btn-wa">WhatsApp</a>
+                        <button class="btn-del" onclick="deleteOrder('${order.id}')">Done</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
 }
 
-searchInput.addEventListener("input", filterAndRender);
+document.getElementById('search-input').addEventListener('input', render);
 
 window.deleteOrder = async (id) => {
-    if (confirm("Mark order as completed?")) {
-        await deleteDoc(doc(db, "purchases", id));
+    if(confirm("Mark this order as completed and move to history?")) {
+        try {
+            const orderData = allOrders.find(o => o.id === id);
+            
+            // Dynamic Archive Collection: prefix + _completed_orders
+            const archiveName = `${activePrefix}_completed_orders`;
+            const activeName = `${activePrefix}_orders`;
+
+            await addDoc(collection(db, archiveName), {
+                ...orderData,
+                completedAt: new Date().toISOString()
+            });
+
+            await deleteDoc(doc(db, activeName, id));
+            
+            alert("Order moved to Service History!");
+        } catch (error) {
+            console.error("Error moving order:", error);
+            alert("Failed to move order.");
+        }
     }
-};
-
-document.getElementById("pass-input").value = "";
+}
 </script>
-
 </body>
 </html>
