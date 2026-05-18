@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Completed Orders | EcoMarket</title>
+    <title>Completed Orders | EcoMarket Archive</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root { --forest: #013220; --gold: #FFD700; --black: #050a05; --glass: rgba(255, 255, 255, 0.03); }
@@ -24,13 +24,11 @@
         .content { padding: 40px 5%; }
         h2 { font-family: 'Playfair Display', serif; color: var(--gold); text-align: center; margin-bottom: 30px; }
 
-        /* Search Bar Styling */
         .search-container { text-align: center; margin-bottom: 30px; }
         #search-input { 
             width: 100%; max-width: 600px; padding: 15px 25px; 
             background: var(--glass); border: 1px solid var(--forest); 
-            border-radius: 35px; color: white; outline: none; 
-            transition: 0.3s;
+            border-radius: 35px; color: white; outline: none; transition: 0.3s;
         }
         #search-input:focus { border-color: var(--gold); box-shadow: 0 0 15px rgba(255, 215, 0, 0.1); }
 
@@ -61,7 +59,6 @@
     <div class="content">
         <h2>Completed Sales History</h2>
 
-        <!-- Search Bar -->
         <div class="search-container">
             <input type="text" id="search-input" placeholder="Search by customer name, phone, or sales ID...">
         </div>
@@ -91,12 +88,18 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        let allRecords = [];
+        // Multi-Admin: Identify Session
+        const userPrefix = localStorage.getItem('eco_user_prefix');
+        if(!userPrefix) {
+            window.location.href = 'index.html'; 
+        }
 
-        onSnapshot(collection(db, "completed_orders"), snapshot => {
+        let allRecords = [];
+        const archiveCollection = `${userPrefix}_completed_orders`;
+
+        onSnapshot(collection(db, archiveCollection), snapshot => {
             allRecords = snapshot.docs.map(d => d.data());
             
-            // Sort by most recently completed
             allRecords.sort((a,b) => {
                 const dateA = new Date(a.completedAt || a.timestamp);
                 const dateB = new Date(b.completedAt || b.timestamp);
@@ -137,7 +140,6 @@
             });
         }
 
-        // Search Logic
         document.getElementById('search-input').addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase();
             const filtered = allRecords.filter(order => 
