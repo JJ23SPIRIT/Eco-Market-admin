@@ -21,13 +21,21 @@
             border-bottom: 1px solid var(--sunset-yellow); position: sticky; top: 0; z-index: 100;
         }
         .nav-logo { font-family: 'Playfair Display', serif; color: var(--sunset-yellow); font-size: 1.4rem; font-weight: 700; }
-        .nav-links { display: flex; gap: 15px; }
+        .nav-links { display: flex; gap: 15px; align-items: center; } /* Added align-items center */
         .nav-item { 
             text-decoration: none; color: white; padding: 10px 20px; 
             background: rgba(255,255,255,0.05); border-radius: 8px; 
             font-size: 0.8rem; font-weight: 600; transition: 0.3s;
         }
         .nav-item:hover { background: var(--sunset-yellow); color: var(--forest-green); }
+
+        /* Profile Button Styling */
+        .profile-btn {
+            background: var(--sunset-yellow); color: var(--forest-green); width: 38px; height: 38px; 
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-weight: bold; cursor: pointer; border: 2px solid transparent; transition: 0.3s;
+        }
+        .profile-btn:hover { background: white; border-color: var(--sunset-yellow); }
 
         .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
         .admin-card { background: var(--glass); border: 1px solid var(--border); border-radius: 24px; padding: 35px; backdrop-filter: blur(15px); }
@@ -62,13 +70,15 @@
 <body>
 
     <nav class="admin-nav">
-        <div class="nav-logo">EcoMarket Manager</div>
+        <div class="nav-logo" id="display-biz-name">EcoMarket Manager</div>
         <div class="nav-links">
             <a href="index.html" class="nav-item">⬅ Active Orders</a>
-            <a href="add_items.html" class="nav-item" style="background: var(--sunset-yellow); color: var(--forest-green);">＋ Add New Item</a>
+            <a href="add_items.html" class="nav-item" style="background: var(--sunset-yellow); color: var(--forest-green);">＋ Add Item</a>
             <a href="inventory.html" class="nav-item">📋 Inventory List</a>
             <a href="completed_orders.html" class="nav-item">✅ Completed Orders</a>
-            <a href="#" class="nav-item" onclick="location.reload()">🔒 Logout</a>
+            <a href="#" class="nav-item" onclick="localStorage.removeItem('eco_user_prefix'); location.href='index.html'">🔒 Logout</a>
+            <!-- Profile Button Added Here -->
+            <div class="profile-btn" onclick="window.location.href='profile.html'" id="profile-initial">?</div>
         </div>
     </nav>
 
@@ -138,7 +148,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        // Added getDoc and doc to imports
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
         const firebaseConfig = { 
@@ -158,6 +169,17 @@
             alert("No active session found. Redirecting to login..."); 
             window.location.href = 'index.html'; 
         }
+
+        // Fetch User Info for Header Initial and Biz Name
+        async function loadHeader() {
+            const userSnap = await getDoc(doc(db, "users", userPrefix));
+            if(userSnap.exists()) {
+                const data = userSnap.data();
+                document.getElementById('display-biz-name').innerText = data.business.name;
+                document.getElementById('profile-initial').innerText = data.personal.fname[0].toUpperCase();
+            }
+        }
+        loadHeader();
 
         // 1. Generate Product ID
         const pID = 'PRD-' + Math.random().toString(36).substr(2, 6).toUpperCase();
