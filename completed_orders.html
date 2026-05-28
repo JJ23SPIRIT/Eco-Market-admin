@@ -5,168 +5,228 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Completed Orders | EcoMarket Archive</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --forest: #013220; --gold: #FFD700; --black: #050a05; --glass: rgba(255, 255, 255, 0.03); }
-        body { font-family: 'Poppins', sans-serif; background: var(--black); color: white; margin: 0; }
+        
+        body { font-family: 'Poppins', sans-serif; background: var(--black); color: white; margin: 0; overflow-x: hidden; }
 
-        .admin-nav { 
+        /* Modern Top Bar */
+        .top-bar { 
             background: var(--forest); padding: 15px 5%; display: flex; 
             justify-content: space-between; align-items: center; 
-            border-bottom: 1px solid var(--gold); position: sticky; top: 0; z-index: 100;
+            border-bottom: 1px solid var(--gold); position: sticky; top: 0; z-index: 500;
         }
-        .nav-logo { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.4rem; }
-        .nav-links { display: flex; gap: 15px; align-items: center; } /* Added align-items center */
-        .nav-item { 
-            text-decoration: none; color: white; padding: 10px 20px; 
-            background: rgba(255,255,255,0.05); border-radius: 8px; font-size: 0.8rem;
+        .menu-trigger { color: var(--gold); font-size: 1.5rem; cursor: pointer; transition: 0.3s; }
+        .top-logo { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.2rem; }
+
+        /* Sliding Sidebar */
+        .sidebar {
+            position: fixed; top: 0; left: -300px; width: 280px; height: 100vh;
+            background: rgba(1, 50, 32, 0.95); backdrop-filter: blur(15px);
+            z-index: 2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 40px 25px; border-right: 1px solid var(--gold);
+            display: flex; flex-direction: column;
         }
-
-        /* Profile Button Styling */
-        .profile-btn {
-            background: var(--gold); color: var(--forest); width: 38px; height: 38px; 
-            border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            font-weight: bold; cursor: pointer; border: 2px solid transparent; transition: 0.3s;
+        .sidebar.active { left: 0; }
+        
+        .sidebar-header { text-align: center; margin-bottom: 40px; }
+        .profile-circle {
+            width: 70px; height: 70px; background: var(--gold); color: var(--forest);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; font-weight: 800; margin: 0 auto 15px; border: 3px solid rgba(255,255,255,0.1);
         }
-        .profile-btn:hover { background: white; border-color: var(--gold); }
+        .sidebar-biz-name { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.1rem; }
 
-        .content { padding: 40px 5%; }
-        h2 { font-family: 'Playfair Display', serif; color: var(--gold); text-align: center; margin-bottom: 30px; }
-
-        .search-container { text-align: center; margin-bottom: 30px; }
-        #search-input { 
-            width: 100%; max-width: 600px; padding: 15px 25px; 
-            background: var(--glass); border: 1px solid var(--forest); 
-            border-radius: 35px; color: white; outline: none; transition: 0.3s;
+        .nav-list { list-style: none; padding: 0; flex: 1; }
+        .nav-link { 
+            display: flex; align-items: center; gap: 15px; padding: 15px;
+            color: #ccc; text-decoration: none; border-radius: 12px;
+            margin-bottom: 10px; transition: 0.3s; font-size: 0.9rem;
         }
-        #search-input:focus { border-color: var(--gold); box-shadow: 0 0 15px rgba(255, 215, 0, 0.1); }
+        .nav-link i { color: var(--gold); width: 20px; text-align: center; }
+        .nav-link:hover, .nav-link.active { background: rgba(255,215,0,0.1); color: white; }
 
-        .table-container { background: var(--glass); border-radius: 20px; padding: 25px; border: 1px solid rgba(255,215,0,0.1); overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
-        th { padding: 15px; text-align: left; color: var(--gold); border-bottom: 2px solid var(--forest); font-size: 0.75rem; text-transform: uppercase; }
-        td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
+        .sidebar-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+            z-index: 1500; display: none; backdrop-filter: blur(3px);
+        }
+        .sidebar-overlay.active { display: block; }
 
-        .item-wrapper { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-        .item-thumb { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; border: 1px solid rgba(255,215,0,0.2); }
+        /* Content Area */
+        .content { padding: 30px 5%; }
+        h2 { font-family: 'Playfair Display', serif; color: var(--gold); text-align: center; font-size: 1.8rem; margin-top: 0; }
+
+        #search-input { width: 100%; max-width: 600px; padding: 14px 20px; background: var(--glass); border: 1px solid var(--forest); border-radius: 30px; color: white; outline: none; display: block; margin: 25px auto; }
+
+        .table-container { background: var(--glass); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,215,0,0.1); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        th { padding: 12px; text-align: left; color: var(--gold); border-bottom: 2px solid var(--forest); font-size: 0.7rem; text-transform: uppercase; }
+        td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; vertical-align: middle; }
+
+        .item-wrapper { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; padding: 6px; border-radius: 8px; background: rgba(255,255,255,0.02); }
+        .item-thumb { width: 45px; height: 45px; border-radius: 6px; object-fit: cover; border: 1px solid rgba(255,215,0,0.2); }
         
         .status-pill { background: #25D366; color: #000; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; }
+
+        /* 📱 RESPONSIVE MOBILE TRANSFORMATION */
+        @media (max-width: 850px) {
+            .top-bar { padding: 15px 20px; }
+            .content { padding: 20px 15px; }
+            
+            thead { display: none; }
+            
+            tr { 
+                display: block; background: rgba(255,255,255,0.03); 
+                margin-bottom: 20px; border-radius: 20px; padding: 20px;
+                border: 1px solid rgba(255,215,0,0.05);
+            }
+
+            td { 
+                display: block; padding: 10px 0; border: none; 
+                text-align: left; position: relative; padding-left: 45%;
+            }
+
+            td::before { 
+                content: attr(data-label); position: absolute; left: 0; 
+                font-weight: 600; color: var(--gold); font-size: 0.7rem; 
+                text-transform: uppercase; 
+            }
+
+            td:last-child { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 10px; padding-top: 15px; padding-left: 0; }
+            td:last-child::before { display: none; }
+            .status-pill { width: 100%; display: block; text-align: center; padding: 10px; }
+        }
     </style>
 </head>
 <body>
 
-    <nav class="admin-nav">
-        <div class="nav-logo" id="display-biz-name">EcoMarket Archive</div>
-        <div class="nav-links">
-            <a href="index.html" class="nav-item">⬅ Dashboard</a>
-            <a href="add_items.html" class="nav-item">＋ Add Item</a>
-            <a href="inventory.html" class="nav-item">📋 Inventory</a>
-            <a href="#" class="nav-item" onclick="localStorage.removeItem('eco_user_prefix'); location.href='index.html'">🔒 Logout</a>
-            <!-- Profile Button Added Here -->
-            <div class="profile-btn" onclick="window.location.href='profile.html'" id="profile-initial">?</div>
-        </div>
+<!-- Sidebar Navigation -->
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="profile-circle" id="profile-initial">?</div>
+        <div class="sidebar-biz-name" id="display-biz-name">Archive Portal</div>
+    </div>
+    
+    <nav class="nav-list">
+        <a href="index.html" class="nav-link"><i class="fa-solid fa-house"></i> Active Orders</a>
+        <a href="add_items.html" class="nav-link"><i class="fa-solid fa-plus"></i> Add New Item</a>
+        <a href="inventory.html" class="nav-link"><i class="fa-solid fa-boxes-stacked"></i> Inventory</a>
+        <a href="#" class="nav-link active" onclick="toggleSidebar()"><i class="fa-solid fa-check-double"></i> Completed Orders</a>
+        <a href="profile.html" class="nav-link"><i class="fa-solid fa-user-gear"></i> My Profile</a>
     </nav>
 
-    <div class="content">
-        <h2>Completed Sales History</h2>
+    <a href="#" class="nav-link" onclick="localStorage.removeItem('eco_user_prefix'); location.href='index.html'" style="margin-top: auto; color: #ff4444;">
+        <i class="fa-solid fa-power-off"></i> Logout
+    </a>
+</aside>
 
-        <div class="search-container">
-            <input type="text" id="search-input" placeholder="Search by customer name, phone, or sales ID...">
-        </div>
+<div class="top-bar">
+    <div class="menu-trigger" onclick="toggleSidebar()"><i class="fa-solid fa-bars-staggered"></i></div>
+    <div class="top-logo">ECO<span>MARKET</span></div>
+    <div style="width: 25px;"></div>
+</div>
 
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Sales ID</th>
-                        <th>Date Completed</th>
-                        <th>Customer</th>
-                        <th>Items Supplied</th>
-                        <th>Total Paid</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="completedTable"></tbody>
-            </table>
-        </div>
+<div class="content">
+    <h2>Sales History</h2>
+
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Search by name, ID, or phone...">
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        // Added getDoc and doc to imports
-        import { getFirestore, collection, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Sales ID</th>
+                    <th>Date Completed</th>
+                    <th>Customer</th>
+                    <th>Items Supplied</th>
+                    <th>Total Paid</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="completedTable"></tbody>
+        </table>
+    </div>
+</div>
 
-        const firebaseConfig = { apiKey: "AIzaSyDtPxmJUBCweFBswJVflEVuc4jp6-m0BVM", authDomain: "prime-dusk.firebaseapp.com", projectId: "prime-dusk" };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-        const userPrefix = localStorage.getItem('eco_user_prefix');
-        if(!userPrefix) { window.location.href = 'index.html'; }
+    const firebaseConfig = { apiKey: "AIzaSyDtPxmJUBCweFBswJVflEVuc4jp6-m0BVM", authDomain: "prime-dusk.firebaseapp.com", projectId: "prime-dusk" };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        // Fetch User Info for Header Initial and Biz Name
-        async function loadHeader() {
-            const userSnap = await getDoc(doc(db, "users", userPrefix));
-            if(userSnap.exists()) {
-                const data = userSnap.data();
-                document.getElementById('display-biz-name').innerText = data.business.name;
-                document.getElementById('profile-initial').innerText = data.personal.fname[0].toUpperCase();
-            }
+    const userPrefix = localStorage.getItem('eco_user_prefix');
+    if(!userPrefix) window.location.href = 'index.html';
+
+    window.toggleSidebar = () => {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('overlay').classList.toggle('active');
+    };
+
+    async function loadHeader() {
+        const userSnap = await getDoc(doc(db, "users", userPrefix));
+        if(userSnap.exists()) {
+            const data = userSnap.data();
+            document.getElementById('display-biz-name').innerText = data.business.name;
+            document.getElementById('profile-initial').innerText = data.personal.fname[0].toUpperCase();
         }
-        loadHeader();
+    }
+    loadHeader();
 
-        let allRecords = [];
-        const archiveCollection = `${userPrefix}_completed_orders`;
+    let allRecords = [];
+    const archiveCollection = `${userPrefix}_completed_orders`;
 
-        onSnapshot(collection(db, archiveCollection), snapshot => {
-            allRecords = snapshot.docs.map(d => d.data());
+    onSnapshot(collection(db, archiveCollection), snapshot => {
+        allRecords = snapshot.docs.map(d => d.data());
+        allRecords.sort((a,b) => new Date(b.completedAt || b.timestamp) - new Date(a.completedAt || a.timestamp));
+        renderTable(allRecords);
+    });
+
+    function renderTable(records) {
+        const table = document.getElementById('completedTable');
+        table.innerHTML = "";
+
+        records.forEach(order => {
+            const rawDate = order.completedAt || order.timestamp;
+            const date = new Date(rawDate).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
             
-            allRecords.sort((a,b) => {
-                const dateA = new Date(a.completedAt || a.timestamp);
-                const dateB = new Date(b.completedAt || b.timestamp);
-                return dateB - dateA;
-            });
+            let itemsHtml = order.items.map(i => `
+                <div class="item-wrapper">
+                    <img src="${i.image}" class="item-thumb" onerror="this.src='https://via.placeholder.com/40'">
+                    <div style="flex:1"><b>${i.name}</b><br><small>Qty: ${i.qty}</small></div>
+                </div>
+            `).join('');
 
-            renderTable(allRecords);
+            table.innerHTML += `
+                <tr>
+                    <td data-label="Sales ID" style="color: var(--gold); font-weight: bold; font-family: monospace;">${order.salesID || 'N/A'}</td>
+                    <td data-label="Date" style="color: #888; font-size: 0.75rem;">${date}</td>
+                    <td data-label="Customer">
+                        <b>${order.customer.name}</b><br>
+                        <small>${order.customer.phone}</small>
+                    </td>
+                    <td data-label="Items">${itemsHtml}</td>
+                    <td data-label="Total" style="color: var(--gold); font-weight: bold;">₵${order.totalAmount.toFixed(2)}</td>
+                    <td><span class="status-pill">FULFILLED</span></td>
+                </tr>
+            `;
         });
+    }
 
-        function renderTable(records) {
-            const table = document.getElementById('completedTable');
-            table.innerHTML = "";
-
-            records.forEach(order => {
-                const rawDate = order.completedAt || order.timestamp;
-                const date = new Date(rawDate).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
-                
-                let itemsHtml = order.items.map(i => `
-                    <div class="item-wrapper">
-                        <img src="${i.image}" class="item-thumb" onerror="this.src='https://via.placeholder.com/40'">
-                        <span>${i.name} (x${i.qty})</span>
-                    </div>
-                `).join('');
-
-                table.innerHTML += `
-                    <tr>
-                        <td style="color: var(--gold); font-weight: bold; font-family: monospace;">${order.salesID || 'N/A'}</td>
-                        <td style="color: #888;">${date}</td>
-                        <td>
-                            <b>${order.customer.name}</b><br>
-                            <small>${order.customer.phone}</small>
-                        </td>
-                        <td>${itemsHtml}</td>
-                        <td style="color: var(--gold); font-weight: bold;">₵${order.totalAmount.toFixed(2)}</td>
-                        <td><span class="status-pill">FULFILLED</span></td>
-                    </tr>
-                `;
-            });
-        }
-
-        document.getElementById('search-input').addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            const filtered = allRecords.filter(order => 
-                (order.customer.name && order.customer.name.toLowerCase().includes(term)) ||
-                (order.customer.phone && order.customer.phone.includes(term)) ||
-                (order.salesID && order.salesID.toLowerCase().includes(term))
-            );
-            renderTable(filtered);
-        });
-    </script>
+    document.getElementById('search-input').addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = allRecords.filter(order => 
+            (order.customer.name && order.customer.name.toLowerCase().includes(term)) ||
+            (order.customer.phone && order.customer.phone.includes(term)) ||
+            (order.salesID && order.salesID.toLowerCase().includes(term))
+        );
+        renderTable(filtered);
+    });
+</script>
 </body>
 </html>

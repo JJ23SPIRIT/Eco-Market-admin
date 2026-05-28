@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | EcoMarket</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --forest: #013220; --gold: #FFD700; --black: #050a05; --glass: rgba(255, 255, 255, 0.03); }
         
@@ -13,80 +14,87 @@
         /* Login Overlay */
         #login-overlay { position: fixed; inset: 0; background: var(--black); display: flex; justify-content: center; align-items: center; z-index: 10000; padding: 20px; }
         .login-box { background: rgba(1, 50, 32, 0.2); padding: 35px; border-radius: 20px; border: 1px solid var(--forest); text-align: center; width: 100%; max-width: 400px; backdrop-filter: blur(10px); }
-        .login-box h1 { font-family: 'Playfair Display', serif; color: var(--gold); margin-bottom: 25px; font-size: 1.8rem; }
+        .login-box h1 { font-family: 'Playfair Display', serif; color: var(--gold); margin-bottom: 25px; }
         .login-box input { width: 100%; padding: 14px; margin-bottom: 15px; background: rgba(0,0,0,0.4); border: 1px solid var(--forest); color: white; border-radius: 10px; text-align: center; outline: none; box-sizing: border-box; }
         .submit-btn { width: 100%; padding: 15px; background: var(--gold); color: var(--forest); border: none; border-radius: 10px; font-weight: 800; cursor: pointer; text-transform: uppercase; }
 
-        /* Navigation */
-        .admin-nav { 
+        /* Modern Top Bar */
+        .top-bar { 
             background: var(--forest); padding: 15px 5%; display: flex; 
             justify-content: space-between; align-items: center; 
-            border-bottom: 1px solid var(--gold); position: sticky; top: 0; z-index: 100;
+            border-bottom: 1px solid var(--gold); position: sticky; top: 0; z-index: 500;
         }
-        .nav-logo { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.3rem; }
-        .nav-links { display: flex; gap: 10px; align-items: center; }
-        .nav-item { 
-            text-decoration: none; color: white; padding: 8px 14px; 
-            background: rgba(255,255,255,0.05); border-radius: 6px; 
-            font-size: 0.7rem; font-weight: 600; transition: 0.3s;
-        }
+        .menu-trigger { color: var(--gold); font-size: 1.5rem; cursor: pointer; transition: 0.3s; }
+        .top-logo { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.2rem; }
 
-        .profile-btn {
-            background: var(--gold); color: var(--forest); width: 36px; height: 36px; 
-            border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            font-weight: bold; cursor: pointer; font-size: 0.9rem;
+        /* Sliding Sidebar */
+        .sidebar {
+            position: fixed; top: 0; left: -300px; width: 280px; height: 100vh;
+            background: rgba(1, 50, 32, 0.95); backdrop-filter: blur(15px);
+            z-index: 2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 40px 25px; border-right: 1px solid var(--gold);
+            display: flex; flex-direction: column;
         }
+        .sidebar.active { left: 0; }
+        
+        .sidebar-header { text-align: center; margin-bottom: 40px; }
+        .profile-circle {
+            width: 70px; height: 70px; background: var(--gold); color: var(--forest);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; font-weight: 800; margin: 0 auto 15px; border: 3px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-biz-name { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.1rem; }
 
-        /* Content */
+        .nav-list { list-style: none; padding: 0; flex: 1; }
+        .nav-link { 
+            display: flex; align-items: center; gap: 15px; padding: 15px;
+            color: #ccc; text-decoration: none; border-radius: 12px;
+            margin-bottom: 10px; transition: 0.3s; font-size: 0.9rem;
+        }
+        .nav-link i { color: var(--gold); width: 20px; text-align: center; }
+        .nav-link:hover, .nav-link.active { background: rgba(255,215,0,0.1); color: white; }
+
+        .sidebar-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+            z-index: 1500; display: none; backdrop-filter: blur(3px);
+        }
+        .sidebar-overlay.active { display: block; }
+
+        /* Content Area */
         #admin-content { display: none; padding: 30px 5%; }
-        h2 { font-family: 'Playfair Display', serif; color: var(--gold); text-align: center; font-size: 1.6rem; margin-top: 10px; }
+        h2 { font-family: 'Playfair Display', serif; color: var(--gold); text-align: center; font-size: 1.8rem; margin-top: 0; }
 
-        #search-input { width: 100%; max-width: 600px; padding: 14px 20px; background: var(--glass); border: 1px solid var(--forest); border-radius: 30px; color: white; outline: none; display: block; margin: 20px auto; }
+        #search-input { width: 100%; max-width: 600px; padding: 14px 20px; background: var(--glass); border: 1px solid var(--forest); border-radius: 30px; color: white; outline: none; display: block; margin: 25px auto; }
 
-        .table-container { background: var(--glass); border-radius: 20px; padding: 15px; border: 1px solid rgba(255,215,0,0.1); }
-        table { width: 100%; border-collapse: collapse; }
+        .table-container { background: var(--glass); border-radius: 20px; padding: 15px; border: 1px solid rgba(255,215,0,0.1); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
         th { padding: 12px; text-align: left; color: var(--gold); border-bottom: 2px solid var(--forest); font-size: 0.7rem; text-transform: uppercase; }
-        td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
+        td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; vertical-align: middle; }
 
-        .item-wrapper { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; background: rgba(255,255,255,0.02); padding: 6px; border-radius: 8px; }
+        .item-wrapper { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; padding: 6px; border-radius: 8px; background: rgba(255,255,255,0.02); }
         .item-thumb { width: 45px; height: 45px; border-radius: 6px; object-fit: cover; border: 1px solid rgba(255,215,0,0.2); }
         
-        .action-btns { display: flex; gap: 8px; flex-wrap: wrap; }
-        .btn-wa, .btn-del { padding: 8px 12px; border-radius: 6px; text-decoration: none; font-size: 0.7rem; font-weight: bold; border: none; cursor: pointer; }
-        .btn-wa { background: #25D366; color: white; }
-        .btn-del { background: #ff4444; color: white; }
+        /* Updated Action Button Styling */
+        .action-btns { display: flex; gap: 8px; }
+        .btn-action { 
+            padding: 8px 12px; border-radius: 6px; text-decoration: none; 
+            font-size: 0.7rem; font-weight: bold; border: none; cursor: pointer; color: white; 
+            display: flex; align-items: center; gap: 5px;
+        }
+        .btn-call { background: #007bff; }
+        .btn-wa { background: #25D366; }
+        .btn-del { background: #ff4444; }
 
-        /* 📱 RESPONSIVE MOBILE TRANSFORMATION */
         @media (max-width: 850px) {
-            .admin-nav { flex-direction: column; gap: 15px; text-align: center; }
-            .nav-links { overflow-x: auto; width: 100%; justify-content: flex-start; padding-bottom: 5px; scrollbar-width: none; }
-            .nav-links::-webkit-scrollbar { display: none; }
-            .nav-item { white-space: nowrap; }
-
-            thead { display: none; } /* Hide table headers on mobile */
-            
-            tr { 
-                display: block; background: rgba(255,255,255,0.03); 
-                margin-bottom: 20px; border-radius: 15px; padding: 15px;
-                border: 1px solid rgba(255,215,0,0.05);
-            }
-
-            td { 
-                display: block; padding: 8px 0; border: none; 
-                text-align: left; position: relative; padding-left: 40%;
-            }
-
-            td::before { 
-                content: attr(data-label); position: absolute; left: 0; 
-                font-weight: 600; color: var(--gold); font-size: 0.7rem; 
-                text-transform: uppercase; 
-            }
-
+            table { min-width: 100%; }
+            th { display: none; }
+            tr { display: block; background: rgba(255,255,255,0.03); margin-bottom: 20px; border-radius: 15px; padding: 15px; }
+            td { display: block; padding: 8px 0; border: none; text-align: left; position: relative; padding-left: 40%; }
+            td::before { content: attr(data-label); position: absolute; left: 0; font-weight: 600; color: var(--gold); font-size: 0.7rem; text-transform: uppercase; }
             td:last-child { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 10px; padding-top: 15px; padding-left: 0; }
             td:last-child::before { display: none; }
-            
-            .action-btns { justify-content: space-between; }
-            .btn-wa, .btn-del { flex: 1; text-align: center; padding: 12px; }
+            .action-btns { flex-direction: column; }
+            .btn-action { justify-content: center; padding: 12px; }
         }
     </style>
 </head>
@@ -97,24 +105,39 @@
         <h1>Admin Vault</h1>
         <input type="text" id="user-input" placeholder="Username">
         <input type="password" id="pass-input" placeholder="Password">
-        <button class="submit-btn" onclick="checkAuth()">Authorize</button>
+        <button class="submit-btn" onclick="checkAuth()">Authorize Access</button>
     </div>
 </div>
 
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="profile-circle" id="profile-initial">?</div>
+        <div class="sidebar-biz-name" id="display-biz-name">Admin Portal</div>
+    </div>
+    
+    <nav class="nav-list">
+        <a href="#" class="nav-link active" onclick="toggleSidebar()"><i class="fa-solid fa-house"></i> Active Orders</a>
+        <a href="add_items.html" class="nav-link"><i class="fa-solid fa-plus"></i> Add New Item</a>
+        <a href="inventory.html" class="nav-link"><i class="fa-solid fa-boxes-stacked"></i> Inventory</a>
+        <a href="completed_orders.html" class="nav-link"><i class="fa-solid fa-check-double"></i> Completed Orders</a>
+        <a href="profile.html" class="nav-link"><i class="fa-solid fa-user-gear"></i> My Profile</a>
+    </nav>
+
+    <a href="#" class="nav-link" onclick="location.reload()" style="margin-top: auto; color: #ff4444;">
+        <i class="fa-solid fa-power-off"></i> Logout
+    </a>
+</aside>
+
 <div id="admin-content">
-    <nav class="admin-nav">
-        <div class="nav-logo" id="display-biz-name">Admin Portal</div>
-        <div class="nav-links">
-            <a href="add_items.html" class="nav-item">＋ Item</a>
-            <a href="inventory.html" class="nav-item">📋 Stock</a>
-            <a href="completed_orders.html" class="nav-item">✅ History</a>
-            <a href="#" class="nav-item" onclick="location.reload()">🔒 Logout</a>
-            <div class="profile-btn" onclick="window.location.href='profile.html'" id="profile-initial">?</div>
-        </div>
+    <nav class="top-bar">
+        <div class="menu-trigger" onclick="toggleSidebar()"><i class="fa-solid fa-bars-staggered"></i></div>
+        <div class="top-logo">ECO<span>MARKET</span></div>
+        <div style="width: 25px;"></div>
     </nav>
 
     <h2>Active Orders</h2>
-    <input type="text" id="search-input" placeholder="Search customer...">
+    <input type="text" id="search-input" placeholder="Search orders...">
 
     <div class="table-container">
         <table>
@@ -143,6 +166,11 @@ const db = getFirestore(app);
 
 let allOrders = [], activePrefix = "";
 
+window.toggleSidebar = () => {
+    document.getElementById('sidebar').classList.toggle('active');
+    document.getElementById('overlay').classList.toggle('active');
+};
+
 window.checkAuth = async () => {
     const user = document.getElementById('user-input').value.toLowerCase().trim();
     const pass = document.getElementById('pass-input').value;
@@ -164,9 +192,9 @@ window.checkAuth = async () => {
             loadOrders();
         } else {
             alert("Invalid Credentials");
-            btn.innerText = "Authorize";
+            btn.innerText = "Authorize Access";
         }
-    } catch (e) { alert("Auth Failed"); btn.innerText = "Authorize"; }
+    } catch (e) { alert("Auth Failed"); btn.innerText = "Authorize Access"; }
 };
 
 function loadOrders() {
@@ -194,16 +222,16 @@ function render() {
 
         table.innerHTML += `
             <tr>
-                <td data-label="ID" style="color: var(--gold); font-family: monospace;">${order.salesID || 'N/A'}</td>
+                <td data-label="ID" style="color: var(--gold); font-family: monospace; font-weight:bold;">${order.salesID || 'N/A'}</td>
                 <td data-label="Date" style="color: #666; font-size: 0.75rem;">${date}</td>
                 <td data-label="Customer"><b>${order.customer.name}</b><br><small>${order.customer.phone}</small></td>
                 <td data-label="Items">${itemsHtml}</td>
                 <td data-label="Total" style="color: var(--gold); font-weight: bold;">₵${order.totalAmount.toFixed(2)}</td>
                 <td>
                     <div class="action-btns">
-                        <a href="tel:${order.customer.phone}" class="btn-wa" style="background:#007bff">Call</a>
-                        <a href="https://wa.me/233${order.customer.phone.substring(1)}" target="_blank" class="btn-wa">WA</a>
-                        <button class="btn-del" onclick="deleteOrder('${order.id}')">Done</button>
+                        <a href="tel:${order.customer.phone}" class="btn-action btn-call"><i class="fa-solid fa-phone"></i> Call</a>
+                        <a href="https://wa.me/233${order.customer.phone.substring(1)}" target="_blank" class="btn-action btn-wa"><i class="fa-brands fa-whatsapp"></i> WA</a>
+                        <button class="btn-action btn-del" onclick="deleteOrder('${order.id}')"><i class="fa-solid fa-check"></i> Done</button>
                     </div>
                 </td>
             </tr>`;
@@ -213,12 +241,12 @@ function render() {
 document.getElementById('search-input').addEventListener('input', render);
 
 window.deleteOrder = async (id) => {
-    if(!confirm("Mark as completed?")) return;
+    if(!confirm("Move to history?")) return;
     try {
         const orderData = allOrders.find(o => o.id === id);
         await addDoc(collection(db, `${activePrefix}_completed_orders`), { ...orderData, completedAt: new Date().toISOString() });
         await deleteDoc(doc(db, `${activePrefix}_orders`, id));
-    } catch (e) { alert("Update failed"); }
+    } catch (e) { alert("Error updating order."); }
 }
 </script>
 </body>

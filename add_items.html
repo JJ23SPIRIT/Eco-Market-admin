@@ -3,267 +3,332 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Product | Multi-Admin Manager</title>
+    <title>Add Product | EcoMarket Manager</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --forest-green: #013220; --sunset-yellow: #FFD700; --deep-black: #050a05;
+            --forest: #013220; --gold: #FFD700; --black: #050a05;
             --glass: rgba(255, 255, 255, 0.03); --border: rgba(255, 215, 0, 0.2);
             --input-bg: rgba(0, 0, 0, 0.3);
         }
 
-        body { font-family: 'Poppins', sans-serif; background: var(--deep-black); color: white; margin: 0; }
+        body { font-family: 'Poppins', sans-serif; background: var(--black); color: white; margin: 0; overflow-x: hidden; }
 
-        .admin-nav { 
-            background: var(--forest-green); padding: 15px 5%; display: flex; 
+        /* Modern Top Bar */
+        .top-bar { 
+            background: var(--forest); padding: 15px 5%; display: flex; 
             justify-content: space-between; align-items: center; 
-            border-bottom: 1px solid var(--sunset-yellow); position: sticky; top: 0; z-index: 100;
+            border-bottom: 1px solid var(--gold); position: sticky; top: 0; z-index: 500;
         }
-        .nav-logo { font-family: 'Playfair Display', serif; color: var(--sunset-yellow); font-size: 1.4rem; font-weight: 700; }
-        .nav-links { display: flex; gap: 15px; align-items: center; }
-        .nav-item { 
-            text-decoration: none; color: white; padding: 10px 20px; 
-            background: rgba(255,255,255,0.05); border-radius: 8px; font-size: 0.8rem; font-weight: 600;
-        }
-        .nav-item:hover { background: var(--sunset-yellow); color: var(--forest-green); }
+        .menu-trigger { color: var(--gold); font-size: 1.5rem; cursor: pointer; transition: 0.3s; }
+        .top-logo { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.2rem; }
 
-        .profile-btn {
-            background: var(--sunset-yellow); color: var(--forest-green); width: 38px; height: 38px; 
-            border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            font-weight: bold; cursor: pointer; border: 2px solid transparent; transition: 0.3s;
+        /* Sliding Sidebar */
+        .sidebar {
+            position: fixed; top: 0; left: -300px; width: 280px; height: 100vh;
+            background: rgba(1, 50, 32, 0.95); backdrop-filter: blur(15px);
+            z-index: 2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 40px 25px; border-right: 1px solid var(--gold);
+            display: flex; flex-direction: column;
         }
+        .sidebar.active { left: 0; }
+        
+        .sidebar-header { text-align: center; margin-bottom: 40px; }
+        .profile-circle {
+            width: 70px; height: 70px; background: var(--gold); color: var(--forest);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; font-weight: 800; margin: 0 auto 15px; border: 3px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-biz-name { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.1rem; }
 
-        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
-        .admin-card { background: var(--glass); border: 1px solid var(--border); border-radius: 24px; padding: 35px; backdrop-filter: blur(15px); }
+        .nav-list { list-style: none; padding: 0; flex: 1; }
+        .nav-link { 
+            display: flex; align-items: center; gap: 15px; padding: 15px;
+            color: #ccc; text-decoration: none; border-radius: 12px;
+            margin-bottom: 10px; transition: 0.3s; font-size: 0.9rem;
+        }
+        .nav-link i { color: var(--gold); width: 20px; text-align: center; }
+        .nav-link:hover, .nav-link.active { background: rgba(255,215,0,0.1); color: white; }
+
+        .sidebar-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+            z-index: 1500; display: none; backdrop-filter: blur(3px);
+        }
+        .sidebar-overlay.active { display: block; }
+
+        /* Container & Card */
+        .container { max-width: 900px; margin: 30px auto; padding: 0 15px; }
+        .admin-card { background: var(--glass); border: 1px solid var(--border); border-radius: 24px; padding: 30px; backdrop-filter: blur(15px); }
 
         .form-section { margin-bottom: 35px; }
-        .section-title { display: flex; align-items: center; gap: 10px; color: var(--sunset-yellow); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-bottom: 20px; }
+        .section-title { display: flex; align-items: center; gap: 10px; color: var(--gold); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-bottom: 20px; }
         .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-        .grid-row { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
-        .input-group { margin-bottom: 20px; display: flex; flex-direction: column; }
-        .input-group label { font-size: 0.75rem; color: #aaa; margin-bottom: 8px; }
+        .grid-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .input-group { margin-bottom: 15px; display: flex; flex-direction: column; }
+        .input-group label { font-size: 0.7rem; color: #aaa; margin-bottom: 8px; text-transform: uppercase; }
         
-        input, select, textarea { background: var(--input-bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px; color: white; outline: none; transition: 0.3s; }
-        input:focus, select:focus { border-color: var(--sunset-yellow); }
+        input, select, textarea { background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; color: white; outline: none; transition: 0.3s; font-size: 0.9rem; }
+        input:focus { border-color: var(--gold); }
 
-        .cat-toolbar { display: flex; gap: 10px; margin-top: 10px; }
-        .cat-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: #ccc; cursor: pointer; font-size: 0.7rem; }
-        .cat-btn:hover { color: var(--sunset-yellow); border-color: var(--sunset-yellow); }
+        .cat-toolbar { display: flex; gap: 8px; margin-top: 10px; }
+        .cat-btn { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: #ccc; cursor: pointer; font-size: 0.7rem; font-weight: 600; }
+        .cat-btn:hover { border-color: var(--gold); color: var(--gold); }
 
-        /* Media Hub Styling */
-        .upload-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; margin-top: 10px; }
+        /* Media Hub */
+        .upload-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-top: 10px; }
         .media-box { 
-            border: 1px dashed var(--border); border-radius: 12px; height: 120px; 
+            border: 1px dashed var(--border); border-radius: 12px; height: 110px; 
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             cursor: pointer; position: relative; overflow: hidden; background: rgba(0,0,0,0.2);
         }
         .media-box img { width: 100%; height: 100%; object-fit: cover; }
-        .media-box span { font-size: 0.6rem; color: #888; text-align: center; padding: 5px; }
+        .media-box span { font-size: 0.55rem; color: #888; text-align: center; padding: 5px; line-height: 1.3; }
 
-        #progress-container { width: 100%; background: #222; border-radius: 10px; height: 6px; margin-top: 15px; display: none; overflow: hidden; }
-        #progress-bar { width: 0%; background: var(--sunset-yellow); height: 100%; transition: 0.3s; }
+        #progress-container { width: 100%; background: #111; border-radius: 10px; height: 6px; margin-top: 20px; display: none; overflow: hidden; }
+        #progress-bar { width: 0%; background: var(--gold); height: 100%; transition: 0.3s; }
 
-        .save-btn { width: 100%; padding: 18px; background: var(--sunset-yellow); color: var(--forest-green); border: none; border-radius: 15px; font-weight: 800; cursor: pointer; text-transform: uppercase; margin-top: 20px; }
+        .save-btn { width: 100%; padding: 18px; background: var(--gold); color: var(--forest); border: none; border-radius: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase; margin-top: 20px; font-size: 0.9rem; }
 
-        @media (max-width: 768px) { .grid-row { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { 
+            .grid-row { grid-template-columns: 1fr; }
+            .admin-card { padding: 20px; }
+            .top-bar { padding: 15px 20px; }
+        }
     </style>
 </head>
 <body>
 
-    <nav class="admin-nav">
-        <div class="nav-logo" id="display-biz-name">EcoMarket Manager</div>
-        <div class="nav-links">
-            <a href="index.html" class="nav-item">⬅ Active Orders</a>
-            <a href="add_items.html" class="nav-item" style="background: var(--sunset-yellow); color: var(--forest-green);">＋ Add Item</a>
-            <a href="inventory.html" class="nav-item">📋 Inventory List</a>
-            <a href="completed_orders.html" class="nav-item">✅ Completed Orders</a>
-            <a href="#" class="nav-item" onclick="localStorage.removeItem('eco_user_prefix'); location.href='index.html'">🔒 Logout</a>
-            <div class="profile-btn" onclick="window.location.href='profile.html'" id="profile-initial">?</div>
-        </div>
+<!-- Sidebar Navigation -->
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="profile-circle" id="profile-initial">?</div>
+        <div class="sidebar-biz-name" id="display-biz-name">Admin Portal</div>
+    </div>
+    
+    <nav class="nav-list">
+        <a href="index.html" class="nav-link"><i class="fa-solid fa-house"></i> Active Orders</a>
+        <a href="#" class="nav-link active" onclick="toggleSidebar()"><i class="fa-solid fa-plus"></i> Add New Item</a>
+        <a href="inventory.html" class="nav-link"><i class="fa-solid fa-boxes-stacked"></i> Inventory</a>
+        <a href="completed_orders.html" class="nav-link"><i class="fa-solid fa-check-double"></i> Completed Orders</a>
+        <a href="profile.html" class="nav-link"><i class="fa-solid fa-user-gear"></i> My Profile</a>
     </nav>
 
-    <div class="container">
-        <div class="admin-card">
-            <div class="form-section">
-                <div class="section-title">Identity & Info</div>
-                <div class="grid-row">
-                    <div class="input-group"><label>Item ID (Auto)</label><input type="text" id="prod-id" readonly style="color: var(--sunset-yellow); font-weight: bold;"></div>
-                    <div class="input-group"><label>Product Name</label><input type="text" id="prod-name" placeholder="Luxury Handbag"></div>
-                </div>
-                <div class="input-group"><label>Description</label><textarea id="prod-desc" rows="2" placeholder="Describe the material, size, etc."></textarea></div>
-            </div>
+    <a href="#" class="nav-link" onclick="localStorage.removeItem('eco_user_prefix'); location.href='index.html'" style="margin-top: auto; color: #ff4444;">
+        <i class="fa-solid fa-power-off"></i> Logout
+    </a>
+</aside>
 
-            <div class="form-section">
-                <div class="section-title">Pricing & Inventory</div>
-                <div class="grid-row">
-                    <div class="input-group"><label>Price (₵)</label><input type="number" id="prod-price" placeholder="0.00"></div>
-                    <div class="input-group">
-                        <label>Stock Level</label>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="number" id="prod-stock" value="1" style="flex: 1;">
-                            <label style="display: flex; align-items: center; gap: 5px; font-size: 0.7rem; background: var(--input-bg); padding: 0 10px; border-radius: 12px; border: 1px solid var(--border);">
-                                <input type="checkbox" id="prod-unlimited"> Infinite
-                            </label>
-                        </div>
-                    </div>
+<div class="top-bar">
+    <div class="menu-trigger" onclick="toggleSidebar()"><i class="fa-solid fa-bars-staggered"></i></div>
+    <div class="top-logo">ECO<span>MARKET</span></div>
+    <div style="width: 25px;"></div>
+</div>
+
+<div class="container">
+    <div class="admin-card">
+        <!-- 1. Identity -->
+        <div class="form-section">
+            <div class="section-title">Identity & Info</div>
+            <div class="grid-row">
+                <div class="input-group">
+                    <label>Item ID (Auto)</label>
+                    <input type="text" id="prod-id" readonly style="color: var(--gold); font-weight: bold; background: rgba(255,215,0,0.05);">
                 </div>
                 <div class="input-group">
-                    <label>Select Category</label>
-                    <select id="prod-category"></select>
-                    <div class="cat-toolbar">
-                        <button class="cat-btn" onclick="addNewCategory()">+ Add New Category</button>
-                        <button class="cat-btn del" onclick="removeCategory()">- Remove Selected</button>
+                    <label>Product Name*</label>
+                    <input type="text" id="prod-name" placeholder="Luxury Handbag">
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Description*</label>
+                <textarea id="prod-desc" rows="2" placeholder="Material, size, origin..."></textarea>
+            </div>
+        </div>
+
+        <!-- 2. Logistics -->
+        <div class="form-section">
+            <div class="section-title">Pricing & Inventory</div>
+            <div class="grid-row">
+                <div class="input-group">
+                    <label>Price (₵)*</label>
+                    <input type="number" id="prod-price" placeholder="0.00">
+                </div>
+                <div class="input-group">
+                    <label>Stock Level</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="number" id="prod-stock" value="1" style="flex: 1;">
+                        <label style="display: flex; align-items: center; gap: 5px; font-size: 0.65rem; background: var(--input-bg); padding: 0 10px; border-radius: 10px; border: 1px solid var(--border); white-space: nowrap;">
+                            <input type="checkbox" id="prod-unlimited"> Infinite
+                        </label>
                     </div>
                 </div>
             </div>
-
-            <div class="form-section">
-                <div class="section-title">Product Media (Primary, Gallery & Video)</div>
-                <div class="upload-grid">
-                    <label class="media-box" for="main-file">
-                        <img id="main-preview" style="display:none">
-                        <span id="main-prompt">📸 Main Image*<br>(Required)</span>
-                        <input type="file" id="main-file" hidden accept="image/*">
-                    </label>
-
-                    <label class="media-box" for="extra-files">
-                        <span id="extra-prompt">🖼 Extra Images<br>(Up to 3)</span>
-                        <input type="file" id="extra-files" hidden accept="image/*" multiple>
-                    </label>
-
-                    <label class="media-box" for="video-file">
-                        <span id="video-prompt">🎥 Product Video<br>(Optional)</span>
-                        <input type="file" id="video-file" hidden accept="video/*">
-                    </label>
+            <div class="input-group">
+                <label>Select Category*</label>
+                <select id="prod-category"></select>
+                <div class="cat-toolbar">
+                    <button class="cat-btn" onclick="addNewCategory()"><i class="fa-solid fa-folder-plus"></i> New</button>
+                    <button class="cat-btn" onclick="removeCategory()"><i class="fa-solid fa-folder-minus"></i> Remove</button>
                 </div>
-                <div id="extra-previews" class="upload-grid"></div>
-                <div id="progress-container"><div id="progress-bar"></div></div>
             </div>
-
-            <button class="save-btn" id="save-btn">Publish Product</button>
         </div>
+
+        <!-- 3. Media -->
+        <div class="form-section">
+            <div class="section-title">Product Media</div>
+            <div class="upload-grid">
+                <label class="media-box" for="main-file">
+                    <img id="main-preview" style="display:none">
+                    <span id="main-prompt">📸 Main Image*<br>(Required)</span>
+                    <input type="file" id="main-file" hidden accept="image/*">
+                </label>
+
+                <label class="media-box" for="extra-files">
+                    <span id="extra-prompt">🖼 Extra Gallery<br>(Up to 3)</span>
+                    <input type="file" id="extra-files" hidden accept="image/*" multiple>
+                </label>
+
+                <label class="media-box" for="video-file">
+                    <span id="video-prompt">🎥 Product Video<br>(Optional)</span>
+                    <input type="file" id="video-file" hidden accept="video/*">
+                </label>
+            </div>
+            <div id="extra-previews" class="upload-grid"></div>
+            <div id="progress-container"><div id="progress-bar"></div></div>
+        </div>
+
+        <button class="save-btn" id="save-btn">Publish Product</button>
     </div>
+</div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyDtPxmJUBCweFBswJVflEVuc4jp6-m0BVM", authDomain: "prime-dusk.firebaseapp.com", projectId: "prime-dusk", storageBucket: "prime-dusk.firebasestorage.app" };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const storage = getStorage(app);
+    const firebaseConfig = { apiKey: "AIzaSyDtPxmJUBCweFBswJVflEVuc4jp6-m0BVM", authDomain: "prime-dusk.firebaseapp.com", projectId: "prime-dusk", storageBucket: "prime-dusk.firebasestorage.app" };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
 
-        const userPrefix = localStorage.getItem('eco_user_prefix');
-        if(!userPrefix) window.location.href = 'index.html';
+    const userPrefix = localStorage.getItem('eco_user_prefix');
+    if(!userPrefix) window.location.href = 'index.html';
 
-        (async () => {
-            const userSnap = await getDoc(doc(db, "users", userPrefix));
-            if(userSnap.exists()) {
-                document.getElementById('display-biz-name').innerText = userSnap.data().business.name;
-                document.getElementById('profile-initial').innerText = userSnap.data().personal.fname[0].toUpperCase();
+    window.toggleSidebar = () => {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('overlay').classList.toggle('active');
+    };
+
+    (async () => {
+        const userSnap = await getDoc(doc(db, "users", userPrefix));
+        if(userSnap.exists()) {
+            const data = userSnap.data();
+            document.getElementById('display-biz-name').innerText = data.business.name;
+            document.getElementById('profile-initial').innerText = data.personal.fname[0].toUpperCase();
+        }
+    })();
+
+    const pID = 'PRD-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+    document.getElementById('prod-id').value = pID;
+
+    const catCollection = `${userPrefix}_categories`;
+    onSnapshot(collection(db, catCollection), snap => {
+        document.getElementById('prod-category').innerHTML = snap.docs.map(d => `<option value="${d.data().name}" data-id="${d.id}">${d.data().name}</option>`).join('');
+    });
+
+    window.addNewCategory = async () => {
+        const n = prompt("Enter Category Name:");
+        if(n) await addDoc(collection(db, catCollection), { name: n });
+    };
+
+    window.removeCategory = async () => {
+        const sel = document.getElementById('prod-category');
+        const id = sel.options[sel.selectedIndex]?.dataset.id;
+        if(id && confirm(`Remove category "${sel.value}"?`)) await deleteDoc(doc(db, catCollection, id));
+    };
+
+    let mainFile, videoFile, extraFiles = [];
+
+    document.getElementById('main-file').onchange = e => {
+        mainFile = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = x => {
+            const img = document.getElementById('main-preview');
+            img.src = x.target.result; img.style.display = "block";
+            document.getElementById('main-prompt').style.display = "none";
+        }
+        reader.readAsDataURL(mainFile);
+    };
+
+    document.getElementById('video-file').onchange = e => {
+        videoFile = e.target.files[0];
+        document.getElementById('video-prompt').innerHTML = "<i class='fa-solid fa-circle-check'></i> Video Ready";
+    };
+
+    document.getElementById('extra-files').onchange = e => {
+        extraFiles = Array.from(e.target.files).slice(0, 3);
+        document.getElementById('extra-previews').innerHTML = extraFiles.map(f => `<div class="media-box"><span><i class='fa-solid fa-file-image'></i><br>${f.name.substring(0,10)}...</span></div>`).join('');
+    };
+
+    document.getElementById('save-btn').onclick = async () => {
+        const name = document.getElementById('prod-name').value.trim();
+        const price = document.getElementById('prod-price').value;
+        const btn = document.getElementById('save-btn');
+
+        if(!name || !price || !mainFile) { alert("Please complete the required fields."); return; }
+
+        btn.disabled = true; btn.innerText = "Processing...";
+        document.getElementById('progress-container').style.display = "block";
+        document.getElementById('progress-bar').style.width = "15%";
+
+        try {
+            // 1. Primary
+            const mainRef = ref(storage, `${userPrefix}/products/${pID}/main`);
+            await uploadBytes(mainRef, mainFile);
+            const mainUrl = await getDownloadURL(mainRef);
+
+            // 2. Extra Images
+            let extraUrls = [];
+            for(let i=0; i<extraFiles.length; i++) {
+                const eRef = ref(storage, `${userPrefix}/products/${pID}/extra_${i}`);
+                await uploadBytes(eRef, extraFiles[i]);
+                extraUrls.push(await getDownloadURL(eRef));
             }
-        })();
 
-        const pID = 'PRD-' + Math.random().toString(36).substr(2, 6).toUpperCase();
-        document.getElementById('prod-id').value = pID;
-
-        const catCollection = `${userPrefix}_categories`;
-        onSnapshot(collection(db, catCollection), snap => {
-            document.getElementById('prod-category').innerHTML = snap.docs.map(d => `<option value="${d.data().name}" data-id="${d.id}">${d.data().name}</option>`).join('');
-        });
-
-        window.addNewCategory = async () => {
-            const n = prompt("Enter Category Name:");
-            if(n) await addDoc(collection(db, catCollection), { name: n });
-        };
-
-        window.removeCategory = async () => {
-            const sel = document.getElementById('prod-category');
-            const id = sel.options[sel.selectedIndex]?.dataset.id;
-            if(id && confirm(`Remove category "${sel.value}"?`)) await deleteDoc(doc(db, catCollection, id));
-        };
-
-        let mainFile, videoFile, extraFiles = [];
-
-        document.getElementById('main-file').onchange = e => {
-            mainFile = e.target.files[0];
-            const reader = new FileReader();
-            reader.onload = x => {
-                const img = document.getElementById('main-preview');
-                img.src = x.target.result; img.style.display = "block";
-                document.getElementById('main-prompt').style.display = "none";
+            // 3. Video
+            let videoUrl = null;
+            if(videoFile) {
+                const vRef = ref(storage, `${userPrefix}/products/${pID}/video`);
+                await uploadBytes(vRef, videoFile);
+                videoUrl = await getDownloadURL(vRef);
             }
-            reader.readAsDataURL(mainFile);
-        };
 
-        document.getElementById('video-file').onchange = e => {
-            videoFile = e.target.files[0];
-            document.getElementById('video-prompt').innerText = "✅ Video: " + videoFile.name;
-        };
+            document.getElementById('progress-bar').style.width = "100%";
 
-        document.getElementById('extra-files').onchange = e => {
-            extraFiles = Array.from(e.target.files).slice(0, 3);
-            document.getElementById('extra-previews').innerHTML = extraFiles.map(f => `<div class="media-box"><span>${f.name}</span></div>`).join('');
-        };
+            await addDoc(collection(db, `${userPrefix}_products`), {
+                productID: pID,
+                name: name,
+                price: parseFloat(price),
+                stock: parseInt(document.getElementById('prod-stock').value),
+                unlimited: document.getElementById('prod-unlimited').checked,
+                category: document.getElementById('prod-category').value,
+                description: document.getElementById('prod-desc').value,
+                image: mainUrl,
+                extraImages: extraUrls,
+                video: videoUrl,
+                createdAt: new Date().toISOString()
+            });
 
-        document.getElementById('save-btn').onclick = async () => {
-            const name = document.getElementById('prod-name').value;
-            const price = document.getElementById('prod-price').value;
-            const btn = document.getElementById('save-btn');
-
-            if(!name || !price || !mainFile) { alert("Missing Name, Price, or Main Image!"); return; }
-
-            btn.disabled = true; btn.innerText = "Uploading Media...";
-            document.getElementById('progress-container').style.display = "block";
-            document.getElementById('progress-bar').style.width = "10%";
-
-            try {
-                // 1. Primary
-                const mainRef = ref(storage, `${userPrefix}/products/${pID}/main`);
-                await uploadBytes(mainRef, mainFile);
-                const mainUrl = await getDownloadURL(mainRef);
-
-                // 2. Extra Images
-                let extraUrls = [];
-                for(let i=0; i<extraFiles.length; i++) {
-                    const eRef = ref(storage, `${userPrefix}/products/${pID}/extra_${i}`);
-                    await uploadBytes(eRef, extraFiles[i]);
-                    extraUrls.push(await getDownloadURL(eRef));
-                }
-
-                // 3. Video
-                let videoUrl = null;
-                if(videoFile) {
-                    const vRef = ref(storage, `${userPrefix}/products/${pID}/video`);
-                    await uploadBytes(vRef, videoFile);
-                    videoUrl = await getDownloadURL(vRef);
-                }
-
-                document.getElementById('progress-bar').style.width = "100%";
-
-                await addDoc(collection(db, `${userPrefix}_products`), {
-                    productID: pID,
-                    name: name,
-                    price: parseFloat(price),
-                    stock: parseInt(document.getElementById('prod-stock').value),
-                    unlimited: document.getElementById('prod-unlimited').checked,
-                    category: document.getElementById('prod-category').value,
-                    description: document.getElementById('prod-desc').value,
-                    image: mainUrl,
-                    extraImages: extraUrls,
-                    video: videoUrl,
-                    createdAt: new Date().toISOString()
-                });
-
-                alert("Product Published!");
-                location.reload();
-            } catch (e) {
-                alert("Upload error: " + e.message);
-                btn.disabled = false;
-            }
-        };
-    </script>
+            alert("Success! Product has been published.");
+            location.reload();
+        } catch (e) {
+            alert("An error occurred. Check your connection.");
+            btn.disabled = false; btn.innerText = "Publish Product";
+        }
+    };
+</script>
 </body>
 </html>
