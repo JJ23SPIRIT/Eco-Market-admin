@@ -30,12 +30,13 @@
         /* Sliding Sidebar */
         .sidebar {
             position: fixed; top: 0; left: -300px; width: 280px; height: 100vh;
-            background: rgba(1, 50, 32, 0.98); backdrop-filter: blur(15px);
+            background: rgba(1, 50, 32, 0.95); backdrop-filter: blur(15px);
             z-index: 2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             padding: 40px 25px; border-right: 1px solid var(--gold);
             display: flex; flex-direction: column;
         }
         .sidebar.active { left: 0; }
+        
         .sidebar-header { text-align: center; margin-bottom: 40px; }
         .profile-circle {
             width: 70px; height: 70px; background: var(--gold); color: var(--forest);
@@ -43,6 +44,7 @@
             font-size: 1.8rem; font-weight: 800; margin: 0 auto 15px; border: 3px solid rgba(255,255,255,0.1);
         }
         .sidebar-biz-name { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.1rem; }
+
         .nav-list { list-style: none; padding: 0; flex: 1; }
         .nav-link { 
             display: flex; align-items: center; gap: 15px; padding: 15px;
@@ -58,69 +60,41 @@
         }
         .sidebar-overlay.active { display: block; }
 
-        /* Main Content Area */
-        #admin-content { display: none; padding: 30px 5%; max-width: 1200px; margin: 0 auto; }
+        /* Content Area */
+        #admin-content { display: none; padding: 30px 5%; }
         h2 { font-family: 'Playfair Display', serif; color: var(--gold); text-align: center; font-size: 1.8rem; margin-top: 0; }
-        #search-input { width: 100%; max-width: 600px; padding: 15px 25px; background: var(--glass); border: 1px solid var(--forest); border-radius: 35px; color: white; outline: none; display: block; margin: 25px auto; transition: 0.3s; }
-        #search-input:focus { border-color: var(--gold); box-shadow: 0 0 15px rgba(255,215,0,0.1); }
 
-        /* Desktop Table View */
-        .table-container { background: var(--glass); border-radius: 20px; padding: 25px; border: 1px solid rgba(255,215,0,0.1); overflow-x: auto; }
+        #search-input { width: 100%; max-width: 600px; padding: 14px 20px; background: var(--glass); border: 1px solid var(--forest); border-radius: 30px; color: white; outline: none; display: block; margin: 25px auto; }
+
+        .table-container { background: var(--glass); border-radius: 20px; padding: 15px; border: 1px solid rgba(255,215,0,0.1); overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 900px; }
-        th { padding: 15px; text-align: left; color: var(--gold); border-bottom: 2px solid var(--forest); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
-        td { padding: 20px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; vertical-align: middle; }
+        th { padding: 12px; text-align: left; color: var(--gold); border-bottom: 2px solid var(--forest); font-size: 0.7rem; text-transform: uppercase; }
+        td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; vertical-align: middle; }
 
-        /* Order Items Styling */
-        .item-wrapper { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; padding: 8px; border-radius: 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.02); }
-        .item-thumb { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; border: 1px solid rgba(255,215,0,0.2); }
+        .item-wrapper { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; padding: 6px; border-radius: 8px; background: rgba(255,255,255,0.02); }
+        .item-thumb { width: 45px; height: 45px; border-radius: 6px; object-fit: cover; border: 1px solid rgba(255,215,0,0.2); }
         
+        /* Updated Action Button Styling */
         .action-btns { display: flex; gap: 8px; }
-        .btn-action { padding: 10px 15px; border-radius: 8px; text-decoration: none; font-size: 0.75rem; font-weight: 700; border: none; cursor: pointer; color: white; display: flex; align-items: center; gap: 6px; transition: 0.3s; }
+        .btn-action { 
+            padding: 8px 12px; border-radius: 6px; text-decoration: none; 
+            font-size: 0.7rem; font-weight: bold; border: none; cursor: pointer; color: white; 
+            display: flex; align-items: center; gap: 5px;
+        }
         .btn-call { background: #007bff; }
         .btn-wa { background: #25D366; }
         .btn-del { background: #ff4444; }
-        .btn-action:hover { transform: translateY(-2px); opacity: 0.9; }
 
-        /* 📱 MOBILE CARD SYSTEM - THE FIX */
         @media (max-width: 850px) {
-            .table-container { background: transparent; padding: 0; border: none; }
-            table, thead, tbody, th, td, tr { display: block; }
-            thead { display: none; }
-            
-            #ordersTable tr { 
-                background: linear-gradient(145deg, #0a110a, #050a05); 
-                margin-bottom: 25px; border-radius: 25px; 
-                padding: 20px; border: 1px solid rgba(255,215,0,0.1);
-                box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-                position: relative;
-            }
-
-            /* ID & Date Header */
-            td:nth-child(1) { border: none; padding: 0; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; width: 100%; }
-            td:nth-child(1)::before { content: 'Order ID'; font-size: 0.6rem; color: #666; text-transform: uppercase; position: static; }
-            
-            td:nth-child(2) { border: none; padding: 0; position: absolute; top: 40px; left: 20px; font-size: 0.75rem; color: #888; }
-            
-            /* Customer Info */
-            td:nth-child(3) { border-top: 1px solid rgba(255,255,255,0.05); padding: 35px 0 15px; }
-            td:nth-child(3) b { font-size: 1.1rem; color: var(--gold); }
-
-            /* Items Section */
-            td:nth-child(4) { padding: 10px 0; }
-
-            /* Total Amount */
-            td:nth-child(5) { 
-                display: flex; justify-content: space-between; align-items: center; 
-                padding: 15px 0; border-top: 1px solid rgba(255,255,255,0.05);
-                font-size: 1.2rem;
-            }
-            td:nth-child(5)::before { content: 'Total Paid'; font-size: 0.8rem; color: #888; font-weight: 400; text-transform: uppercase; }
-
-            /* Actions Footer */
-            td:nth-child(6) { padding: 15px 0 0; border-top: 1px dashed rgba(255,215,0,0.2); }
-            .action-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-            .btn-del { grid-column: span 2; justify-content: center; padding: 14px; margin-top: 5px; }
-            .btn-call, .btn-wa { justify-content: center; padding: 12px; }
+            table { min-width: 100%; }
+            th { display: none; }
+            tr { display: block; background: rgba(255,255,255,0.03); margin-bottom: 20px; border-radius: 15px; padding: 15px; }
+            td { display: block; padding: 8px 0; border: none; text-align: left; position: relative; padding-left: 40%; }
+            td::before { content: attr(data-label); position: absolute; left: 0; font-weight: 600; color: var(--gold); font-size: 0.7rem; text-transform: uppercase; }
+            td:last-child { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 10px; padding-top: 15px; padding-left: 0; }
+            td:last-child::before { display: none; }
+            .action-btns { flex-direction: column; }
+            .btn-action { justify-content: center; padding: 12px; }
         }
     </style>
 </head>
@@ -141,6 +115,7 @@
         <div class="profile-circle" id="profile-initial">?</div>
         <div class="sidebar-biz-name" id="display-biz-name">Admin Portal</div>
     </div>
+    
     <nav class="nav-list">
         <a href="#" class="nav-link active" onclick="toggleSidebar()"><i class="fa-solid fa-house"></i> Active Orders</a>
         <a href="add_items.html" class="nav-link"><i class="fa-solid fa-plus"></i> Add New Item</a>
@@ -148,7 +123,10 @@
         <a href="completed_orders.html" class="nav-link"><i class="fa-solid fa-check-double"></i> Completed Orders</a>
         <a href="profile.html" class="nav-link"><i class="fa-solid fa-user-gear"></i> My Profile</a>
     </nav>
-    <a href="#" class="nav-link" onclick="location.reload()" style="margin-top: auto; color: #ff4444;"><i class="fa-solid fa-power-off"></i> Logout</a>
+
+    <a href="#" class="nav-link" onclick="location.reload()" style="margin-top: auto; color: #ff4444;">
+        <i class="fa-solid fa-power-off"></i> Logout
+    </a>
 </aside>
 
 <div id="admin-content">
@@ -159,7 +137,7 @@
     </nav>
 
     <h2>Active Orders</h2>
-    <input type="text" id="search-input" placeholder="Search by name or phone...">
+    <input type="text" id="search-input" placeholder="Search orders...">
 
     <div class="table-container">
         <table>
@@ -197,8 +175,10 @@ window.checkAuth = async () => {
     const user = document.getElementById('user-input').value.toLowerCase().trim();
     const pass = document.getElementById('pass-input').value;
     const btn = document.querySelector('.submit-btn');
+
     if(!user || !pass) return;
     btn.innerText = "Verifying...";
+    
     try {
         const userSnap = await getDoc(doc(db, "users", user));
         if(userSnap.exists() && userSnap.data().password === pass) {
@@ -210,7 +190,10 @@ window.checkAuth = async () => {
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('admin-content').style.display = 'block';
             loadOrders();
-        } else { alert("Invalid Credentials"); btn.innerText = "Authorize Access"; }
+        } else {
+            alert("Invalid Credentials");
+            btn.innerText = "Authorize Access";
+        }
     } catch (e) { alert("Auth Failed"); btn.innerText = "Authorize Access"; }
 };
 
@@ -226,6 +209,7 @@ function render() {
     const term = document.getElementById('search-input').value.toLowerCase();
     const table = document.getElementById('ordersTable');
     table.innerHTML = "";
+
     const filtered = allOrders.filter(o => o.customer.name.toLowerCase().includes(term) || o.customer.phone.includes(term));
 
     filtered.forEach(order => {
@@ -238,15 +222,15 @@ function render() {
 
         table.innerHTML += `
             <tr>
-                <td style="color: var(--gold); font-family: monospace; font-weight:bold;">${order.salesID || 'N/A'}</td>
-                <td>${date}</td>
-                <td><b>${order.customer.name}</b><br><small>${order.customer.phone}</small></td>
-                <td>${itemsHtml}</td>
-                <td style="color: var(--gold); font-weight: bold;">₵${order.totalAmount.toFixed(2)}</td>
+                <td data-label="ID" style="color: var(--gold); font-family: monospace; font-weight:bold;">${order.salesID || 'N/A'}</td>
+                <td data-label="Date" style="color: #666; font-size: 0.75rem;">${date}</td>
+                <td data-label="Customer"><b>${order.customer.name}</b><br><small>${order.customer.phone}</small></td>
+                <td data-label="Items">${itemsHtml}</td>
+                <td data-label="Total" style="color: var(--gold); font-weight: bold;">₵${order.totalAmount.toFixed(2)}</td>
                 <td>
                     <div class="action-btns">
                         <a href="tel:${order.customer.phone}" class="btn-action btn-call"><i class="fa-solid fa-phone"></i> Call</a>
-                        <a href="https://wa.me/233${order.customer.phone.substring(1)}" target="_blank" class="btn-action btn-wa"><i class="fa-brands fa-whatsapp"></i> Chat</a>
+                        <a href="https://wa.me/233${order.customer.phone.substring(1)}" target="_blank" class="btn-action btn-wa"><i class="fa-brands fa-whatsapp"></i> WA</a>
                         <button class="btn-action btn-del" onclick="deleteOrder('${order.id}')"><i class="fa-solid fa-check"></i> Done</button>
                     </div>
                 </td>
@@ -257,7 +241,7 @@ function render() {
 document.getElementById('search-input').addEventListener('input', render);
 
 window.deleteOrder = async (id) => {
-    if(!confirm("Mark this order as completed?")) return;
+    if(!confirm("Move to history?")) return;
     try {
         const orderData = allOrders.find(o => o.id === id);
         await addDoc(collection(db, `${activePrefix}_completed_orders`), { ...orderData, completedAt: new Date().toISOString() });
