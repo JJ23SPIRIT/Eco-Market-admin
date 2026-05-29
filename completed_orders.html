@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Completed Orders | EcoMarket Archive</title>
+    <title>Sales History | EcoMarket Archive</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -11,91 +11,67 @@
         
         body { font-family: 'Poppins', sans-serif; background: var(--black); color: white; margin: 0; overflow-x: hidden; }
 
-        /* Modern Top Bar */
+        /* Compact Top Bar */
         .top-bar { 
-            background: var(--forest); padding: 15px 5%; display: flex; 
+            background: var(--forest); padding: 10px 5%; display: flex; 
             justify-content: space-between; align-items: center; 
             border-bottom: 1px solid var(--gold); position: sticky; top: 0; z-index: 500;
         }
-        .menu-trigger { color: var(--gold); font-size: 1.5rem; cursor: pointer; transition: 0.3s; }
-        .top-logo { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.2rem; }
+        .menu-trigger { color: var(--gold); font-size: 1.3rem; cursor: pointer; }
+        .top-logo { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.1rem; }
 
         /* Sliding Sidebar */
         .sidebar {
-            position: fixed; top: 0; left: -300px; width: 280px; height: 100vh;
-            background: rgba(1, 50, 32, 0.95); backdrop-filter: blur(15px);
-            z-index: 2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 40px 25px; border-right: 1px solid var(--gold);
+            position: fixed; top: 0; left: -300px; width: 260px; height: 100vh;
+            background: rgba(1, 50, 32, 0.98); backdrop-filter: blur(15px);
+            z-index: 2000; transition: 0.4s ease;
+            padding: 30px 20px; border-right: 1px solid var(--gold);
             display: flex; flex-direction: column;
         }
         .sidebar.active { left: 0; }
-        
-        .sidebar-header { text-align: center; margin-bottom: 40px; }
+        .sidebar-header { text-align: center; margin-bottom: 30px; }
         .profile-circle {
-            width: 70px; height: 70px; background: var(--gold); color: var(--forest);
+            width: 60px; height: 60px; background: var(--gold); color: var(--forest);
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 1.8rem; font-weight: 800; margin: 0 auto 15px; border: 3px solid rgba(255,255,255,0.1);
+            font-size: 1.5rem; font-weight: 800; margin: 0 auto 10px; border: 2px solid rgba(255,255,255,0.1);
         }
-        .sidebar-biz-name { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.1rem; }
-
-        .nav-list { list-style: none; padding: 0; flex: 1; }
+        .sidebar-biz-name { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1rem; }
         .nav-link { 
-            display: flex; align-items: center; gap: 15px; padding: 15px;
-            color: #ccc; text-decoration: none; border-radius: 12px;
-            margin-bottom: 10px; transition: 0.3s; font-size: 0.9rem;
+            display: flex; align-items: center; gap: 12px; padding: 12px;
+            color: #ccc; text-decoration: none; border-radius: 10px;
+            margin-bottom: 5px; transition: 0.2s; font-size: 0.85rem;
         }
-        .nav-link i { color: var(--gold); width: 20px; text-align: center; }
+        .nav-link i { color: var(--gold); width: 18px; text-align: center; }
         .nav-link:hover, .nav-link.active { background: rgba(255,215,0,0.1); color: white; }
 
-        .sidebar-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.6);
-            z-index: 1500; display: none; backdrop-filter: blur(3px);
-        }
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1500; display: none; }
         .sidebar-overlay.active { display: block; }
 
         /* Content Area */
-        .content { padding: 30px 5%; }
-        h2 { font-family: 'Playfair Display', serif; color: var(--gold); text-align: center; font-size: 1.8rem; margin-top: 0; }
+        #admin-content { display: none; padding: 20px 4%; }
+        h2 { font-family: 'Playfair Display', serif; color: var(--gold); text-align: center; font-size: 1.4rem; margin: 0; }
+        #search-input { width: 100%; max-width: 500px; padding: 12px 20px; background: var(--glass); border: 1px solid var(--forest); border-radius: 25px; color: white; outline: none; display: block; margin: 15px auto; font-size: 0.85rem; }
 
-        #search-input { width: 100%; max-width: 600px; padding: 14px 20px; background: var(--glass); border: 1px solid var(--forest); border-radius: 30px; color: white; outline: none; display: block; margin: 25px auto; }
+        .table-container { background: var(--glass); border-radius: 15px; padding: 15px; border: 1px solid rgba(255,215,0,0.1); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 850px; }
+        th { padding: 10px; text-align: left; color: var(--gold); border-bottom: 2px solid var(--forest); font-size: 0.65rem; text-transform: uppercase; }
+        td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.8rem; vertical-align: middle; }
 
-        .table-container { background: var(--glass); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,215,0,0.1); overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 900px; }
-        th { padding: 12px; text-align: left; color: var(--gold); border-bottom: 2px solid var(--forest); font-size: 0.7rem; text-transform: uppercase; }
-        td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; vertical-align: middle; }
+        .item-wrapper { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; padding: 4px; border-radius: 6px; background: rgba(255,255,255,0.02); }
+        .item-thumb { width: 35px; height: 35px; border-radius: 5px; object-fit: cover; border: 1px solid rgba(255,215,0,0.2); }
+        .status-pill { background: #25D366; color: #000; padding: 3px 10px; border-radius: 20px; font-size: 0.6rem; font-weight: bold; text-transform: uppercase; }
 
-        .item-wrapper { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; padding: 6px; border-radius: 8px; background: rgba(255,255,255,0.02); }
-        .item-thumb { width: 45px; height: 45px; border-radius: 6px; object-fit: cover; border: 1px solid rgba(255,215,0,0.2); }
-        
-        .status-pill { background: #25D366; color: #000; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; }
-
-        /* 📱 RESPONSIVE MOBILE TRANSFORMATION */
+        /* 📱 OPTIMIZED MOBILE SCALE */
         @media (max-width: 850px) {
-            .top-bar { padding: 15px 20px; }
-            .content { padding: 20px 15px; }
-            
-            thead { display: none; }
-            
-            tr { 
-                display: block; background: rgba(255,255,255,0.03); 
-                margin-bottom: 20px; border-radius: 20px; padding: 20px;
-                border: 1px solid rgba(255,215,0,0.05);
-            }
-
-            td { 
-                display: block; padding: 10px 0; border: none; 
-                text-align: left; position: relative; padding-left: 45%;
-            }
-
-            td::before { 
-                content: attr(data-label); position: absolute; left: 0; 
-                font-weight: 600; color: var(--gold); font-size: 0.7rem; 
-                text-transform: uppercase; 
-            }
-
-            td:last-child { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 10px; padding-top: 15px; padding-left: 0; }
+            table { min-width: 100%; }
+            th { display: none; }
+            tr { display: block; background: rgba(255,255,255,0.03); margin-bottom: 12px; border-radius: 12px; padding: 12px; border: 1px solid rgba(255,215,0,0.05); }
+            td { display: block; padding: 5px 0; border: none; text-align: left; position: relative; padding-left: 35%; min-height: 25px; }
+            td::before { content: attr(data-label); position: absolute; left: 0; font-weight: 600; color: var(--gold); font-size: 0.6rem; text-transform: uppercase; opacity: 0.7; }
+            td:last-child { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 8px; padding-top: 10px; padding-left: 0; }
             td:last-child::before { display: none; }
-            .status-pill { width: 100%; display: block; text-align: center; padding: 10px; }
+            .item-wrapper { padding: 3px; }
+            .item-thumb { width: 30px; height: 30px; }
         }
     </style>
 </head>
@@ -106,44 +82,37 @@
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
         <div class="profile-circle" id="profile-initial">?</div>
-        <div class="sidebar-biz-name" id="display-biz-name">Archive Portal</div>
+        <div class="sidebar-biz-name" id="display-biz-name">Admin Portal</div>
     </div>
-    
-    <nav class="nav-list">
+    <nav class="nav-list" style="list-style: none; padding: 0;">
         <a href="index.html" class="nav-link"><i class="fa-solid fa-house"></i> Active Orders</a>
         <a href="add_items.html" class="nav-link"><i class="fa-solid fa-plus"></i> Add New Item</a>
         <a href="inventory.html" class="nav-link"><i class="fa-solid fa-boxes-stacked"></i> Inventory</a>
         <a href="#" class="nav-link active" onclick="toggleSidebar()"><i class="fa-solid fa-check-double"></i> Completed Orders</a>
         <a href="profile.html" class="nav-link"><i class="fa-solid fa-user-gear"></i> My Profile</a>
     </nav>
-
-    <a href="#" class="nav-link" onclick="localStorage.removeItem('eco_user_prefix'); location.href='index.html'" style="margin-top: auto; color: #ff4444;">
-        <i class="fa-solid fa-power-off"></i> Logout
-    </a>
+    <a href="#" class="nav-link" onclick="localStorage.removeItem('eco_user_prefix'); location.href='index.html'" style="margin-top: auto; color: #ff4444; text-decoration: none;"><i class="fa-solid fa-power-off"></i> Logout</a>
 </aside>
 
 <div class="top-bar">
     <div class="menu-trigger" onclick="toggleSidebar()"><i class="fa-solid fa-bars-staggered"></i></div>
     <div class="top-logo">ECO<span>MARKET</span></div>
-    <div style="width: 25px;"></div>
+    <div style="width: 20px;"></div>
 </div>
 
-<div class="content">
-    <h2>Sales History</h2>
-
-    <div class="search-container">
-        <input type="text" id="search-input" placeholder="Search by name, ID, or phone...">
-    </div>
+<div id="admin-content" style="display: block;">
+    <h2 style="margin-top:10px">Sales History</h2>
+    <input type="text" id="search-input" placeholder="Search customer, ID or phone...">
 
     <div class="table-container">
         <table>
             <thead>
                 <tr>
                     <th>Sales ID</th>
-                    <th>Date Completed</th>
+                    <th>Date</th>
                     <th>Customer</th>
-                    <th>Items Supplied</th>
-                    <th>Total Paid</th>
+                    <th>Items</th>
+                    <th>Total</th>
                     <th>Status</th>
                 </tr>
             </thead>
@@ -179,9 +148,7 @@
     loadHeader();
 
     let allRecords = [];
-    const archiveCollection = `${userPrefix}_completed_orders`;
-
-    onSnapshot(collection(db, archiveCollection), snapshot => {
+    onSnapshot(collection(db, `${userPrefix}_completed_orders`), snapshot => {
         allRecords = snapshot.docs.map(d => d.data());
         allRecords.sort((a,b) => new Date(b.completedAt || b.timestamp) - new Date(a.completedAt || a.timestamp));
         renderTable(allRecords);
@@ -190,10 +157,17 @@
     function renderTable(records) {
         const table = document.getElementById('completedTable');
         table.innerHTML = "";
+        const term = document.getElementById('search-input').value.toLowerCase();
 
-        records.forEach(order => {
+        const filtered = records.filter(order => 
+            (order.customer.name && order.customer.name.toLowerCase().includes(term)) ||
+            (order.customer.phone && order.customer.phone.includes(term)) ||
+            (order.salesID && order.salesID.toLowerCase().includes(term))
+        );
+
+        filtered.forEach(order => {
             const rawDate = order.completedAt || order.timestamp;
-            const date = new Date(rawDate).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+            const date = new Date(rawDate).toLocaleDateString([], { month: 'short', day: 'numeric' });
             
             let itemsHtml = order.items.map(i => `
                 <div class="item-wrapper">
@@ -204,12 +178,9 @@
 
             table.innerHTML += `
                 <tr>
-                    <td data-label="Sales ID" style="color: var(--gold); font-weight: bold; font-family: monospace;">${order.salesID || 'N/A'}</td>
-                    <td data-label="Date" style="color: #888; font-size: 0.75rem;">${date}</td>
-                    <td data-label="Customer">
-                        <b>${order.customer.name}</b><br>
-                        <small>${order.customer.phone}</small>
-                    </td>
+                    <td data-label="ID" style="color: var(--gold); font-family: monospace; font-weight:bold;">${order.salesID || 'N/A'}</td>
+                    <td data-label="Date" style="color: #666;">${date}</td>
+                    <td data-label="Customer"><b>${order.customer.name}</b><br><small>${order.customer.phone}</small></td>
                     <td data-label="Items">${itemsHtml}</td>
                     <td data-label="Total" style="color: var(--gold); font-weight: bold;">₵${order.totalAmount.toFixed(2)}</td>
                     <td><span class="status-pill">FULFILLED</span></td>
@@ -218,15 +189,7 @@
         });
     }
 
-    document.getElementById('search-input').addEventListener('input', (e) => {
-        const term = e.target.value.toLowerCase();
-        const filtered = allRecords.filter(order => 
-            (order.customer.name && order.customer.name.toLowerCase().includes(term)) ||
-            (order.customer.phone && order.customer.phone.includes(term)) ||
-            (order.salesID && order.salesID.toLowerCase().includes(term))
-        );
-        renderTable(filtered);
-    });
+    document.getElementById('search-input').addEventListener('input', () => renderTable(allRecords));
 </script>
 </body>
 </html>
