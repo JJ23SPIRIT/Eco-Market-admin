@@ -5,242 +5,265 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile | EcoMarket Manager</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --forest: #013220; --gold: #FFD700; --black: #050a05; --glass: rgba(255, 255, 255, 0.03); }
-        body { font-family: 'Poppins', sans-serif; background: var(--black); color: white; margin: 0; }
-
-        /* Unified Rectangular Menu Bar */
-        .admin-nav { 
-            background: var(--forest); padding: 15px 5%; display: flex; 
-            justify-content: space-between; align-items: center; 
-            border-bottom: 1px solid var(--gold); position: sticky; top: 0; z-index: 100;
-        }
-        .nav-logo { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.4rem; }
-        .nav-links { display: flex; gap: 15px; }
-        .nav-item { 
-            text-decoration: none; color: white; padding: 10px 20px; 
-            background: rgba(255,255,255,0.05); border-radius: 8px; font-size: 0.8rem;
-        }
-
-        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        :root { --forest: #013220; --gold: #FFD700; --black: #050a05; --glass: rgba(255, 255, 255, 0.03); --border: rgba(255, 215, 0, 0.15); }
         
-        /* Profile Header */
-        .profile-header { text-align: center; margin-bottom: 40px; }
-        .avatar-wrapper { position: relative; width: 120px; height: 120px; margin: 0 auto 15px; }
-        #profile-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid var(--gold); background: #222; }
+        body { font-family: 'Poppins', sans-serif; background: var(--black); color: white; margin: 0; overflow-x: hidden; }
+
+        /* Compact Top Bar */
+        .top-bar { 
+            background: var(--forest); padding: 10px 5%; display: flex; 
+            justify-content: space-between; align-items: center; 
+            border-bottom: 1px solid var(--gold); position: sticky; top: 0; z-index: 500;
+        }
+        .menu-trigger { color: var(--gold); font-size: 1.3rem; cursor: pointer; }
+        .top-logo { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.1rem; }
+
+        /* Sliding Sidebar */
+        .sidebar {
+            position: fixed; top: 0; left: -300px; width: 260px; height: 100vh;
+            background: rgba(1, 50, 32, 0.98); backdrop-filter: blur(15px);
+            z-index: 2000; transition: 0.4s ease;
+            padding: 30px 20px; border-right: 1px solid var(--gold);
+            display: flex; flex-direction: column;
+        }
+        .sidebar.active { left: 0; }
+        .sidebar-header { text-align: center; margin-bottom: 30px; }
+        .profile-circle {
+            width: 60px; height: 60px; background: var(--gold); color: var(--forest);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; font-weight: 800; margin: 0 auto 10px; border: 2px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-biz-name { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1rem; }
+        .nav-link { 
+            display: flex; align-items: center; gap: 12px; padding: 12px;
+            color: #ccc; text-decoration: none; border-radius: 10px;
+            margin-bottom: 5px; transition: 0.2s; font-size: 0.85rem;
+        }
+        .nav-link i { color: var(--gold); width: 18px; text-align: center; }
+        .nav-link:hover, .nav-link.active { background: rgba(255,215,0,0.1); color: white; }
+
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1500; display: none; }
+        .sidebar-overlay.active { display: block; }
+
+        /* Profile Content */
+        .container { max-width: 900px; margin: 20px auto; padding: 0 4%; }
+        
+        .profile-header { text-align: center; margin-bottom: 30px; }
+        .avatar-wrapper { position: relative; width: 100px; height: 100px; margin: 0 auto 15px; }
+        #profile-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold); background: #111; }
         .upload-label { 
             position: absolute; bottom: 0; right: 0; background: var(--gold); 
-            color: var(--forest); width: 35px; height: 35px; border-radius: 50%; 
+            color: var(--forest); width: 30px; height: 30px; border-radius: 50%; 
             display: flex; justify-content: center; align-items: center; 
-            cursor: pointer; font-weight: bold; border: 2px solid var(--black);
+            cursor: pointer; border: 2px solid var(--black); font-size: 0.8rem;
         }
 
-        /* Form Sections */
-        .card { background: var(--glass); border: 1px solid rgba(255,215,0,0.1); border-radius: 20px; padding: 30px; margin-bottom: 30px; }
-        h3 { color: var(--gold); font-family: 'Playfair Display', serif; margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 10px; }
+        .card { background: var(--glass); border: 1px solid var(--border); border-radius: 15px; padding: 20px; margin-bottom: 20px; }
+        h3 { color: var(--gold); font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; }
         
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .field { margin-bottom: 15px; }
-        label { display: block; font-size: 0.7rem; color: #888; text-transform: uppercase; margin-bottom: 5px; }
-        input, textarea, select { 
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .field { margin-bottom: 12px; }
+        label { display: block; font-size: 0.65rem; color: #888; text-transform: uppercase; margin-bottom: 5px; }
+        input, textarea { 
             width: 100%; padding: 12px; background: rgba(0,0,0,0.3); 
-            border: 1px solid #333; border-radius: 10px; color: white; outline: none; box-sizing: border-box;
+            border: 1px solid #333; border-radius: 8px; color: white; outline: none; box-sizing: border-box; font-size: 0.85rem;
         }
         input:focus { border-color: var(--gold); }
-        input[readonly] { background: rgba(255,255,255,0.02); color: #666; cursor: not-allowed; border-color: transparent; font-family: monospace; }
+        input[readonly] { background: rgba(255,255,255,0.02); color: #888; border: 1px dashed #444; font-family: monospace; }
 
-        /* ID Preview Styling */
-        .id-preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
-        .id-thumb { width: 100%; height: 150px; object-fit: cover; border-radius: 12px; border: 1px solid #444; background: #111; }
+        /* ID Preview */
+        .id-preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
+        .id-thumb { width: 100%; height: 120px; object-fit: cover; border-radius: 10px; border: 1px solid #444; background: #111; }
 
         .save-btn { 
-            width: 100%; padding: 18px; background: var(--gold); color: var(--forest); 
-            border: none; border-radius: 12px; font-weight: 800; cursor: pointer; 
-            text-transform: uppercase; transition: 0.3s;
+            width: 100%; padding: 16px; background: var(--gold); color: var(--forest); 
+            border: none; border-radius: 10px; font-weight: 800; cursor: pointer; 
+            text-transform: uppercase; transition: 0.3s; font-size: 0.85rem;
         }
-        .save-btn:hover { background: white; }
 
-        #upload-progress { height: 4px; background: var(--gold); width: 0%; margin-top: 10px; transition: 0.3s; }
+        #upload-progress { height: 4px; background: var(--gold); width: 0%; margin-top: 10px; transition: 0.3s; border-radius: 2px; }
 
-        @media (max-width: 600px) { .grid, .id-preview-grid { grid-template-columns: 1fr; } }
+        /* 📱 MOBILE SCALE */
+        @media (max-width: 850px) {
+            .grid, .id-preview-grid { grid-template-columns: 1fr; }
+            .card { padding: 15px; }
+            h3 { font-size: 1rem; }
+            input { padding: 10px; }
+            .id-thumb { height: 150px; }
+            .profile-header h2 { font-size: 1.3rem; }
+        }
     </style>
 </head>
 <body>
 
-    <nav class="admin-nav">
-        <div class="nav-logo">Vendor Management</div>
-        <div class="nav-links">
-            <a href="index.html" class="nav-item">⬅ Dashboard</a>
-            <a href="inventory.html" class="nav-item">📋 Inventory</a>
-            <a href="#" class="nav-item" onclick="location.reload()">🔄 Refresh</a>
-        </div>
+<!-- Sidebar Navigation -->
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="profile-circle" id="profile-initial">?</div>
+        <div class="sidebar-biz-name" id="display-biz-name">Admin Portal</div>
+    </div>
+    <nav class="nav-list" style="list-style: none; padding: 0;">
+        <a href="orders.html" class="nav-link"><i class="fa-solid fa-house"></i> Active Orders</a>
+        <a href="add_items.html" class="nav-link"><i class="fa-solid fa-plus"></i> Add New Item</a>
+        <a href="inventory.html" class="nav-link"><i class="fa-solid fa-boxes-stacked"></i> Inventory</a>
+        <a href="completed_orders.html" class="nav-link"><i class="fa-solid fa-check-double"></i> Completed Orders</a>
+        <a href="#" class="nav-link active" onclick="toggleSidebar()"><i class="fa-solid fa-user-gear"></i> My Profile</a>
     </nav>
+    <a href="#" class="nav-link" id="logout-btn" style="margin-top: auto; color: #ff4444; text-decoration: none;"><i class="fa-solid fa-power-off"></i> Logout</a>
+</aside>
 
-    <div class="container">
-        <div class="profile-header">
-            <div class="avatar-wrapper">
-                <img id="profile-img" src="https://via.placeholder.com/120?text=User">
-                <label for="file-input" class="upload-label">✎</label>
-                <input type="file" id="file-input" hidden accept="image/*">
-            </div>
-            <div id="upload-progress"></div>
-            <h2 id="display-name">Vendor Name</h2>
-            <p style="color: var(--gold); font-size: 0.8rem;" id="display-username">@username</p>
+<div class="top-bar">
+    <div class="menu-trigger" onclick="toggleSidebar()"><i class="fa-solid fa-bars-staggered"></i></div>
+    <div class="top-logo">ECO<span>MARKET</span></div>
+    <div style="width: 20px;"></div>
+</div>
+
+<div class="container">
+    <div class="profile-header">
+        <div class="avatar-wrapper">
+            <img id="profile-img" src="https://via.placeholder.com/120?text=User">
+            <label for="file-input" class="upload-label"><i class="fa-solid fa-camera"></i></label>
+            <input type="file" id="file-input" hidden accept="image/*">
         </div>
-
-        <!-- Section 1: Read-Only System Details -->
-        <div class="card">
-            <h3>Security Credentials (Read-Only)</h3>
-            <div class="grid">
-                <div class="field"><label>User ID</label><input type="text" id="uid" readonly></div>
-                <div class="field"><label>Admin Access Code</label><input type="text" id="admin-code" readonly></div>
-                <div class="field"><label>Public System Key</label><input type="text" id="pub-key" readonly></div>
-                <div class="field"><label>Private Secret Key</label><input type="password" id="priv-key" value="••••••••••••" readonly onclick="this.type='text'" onblur="this.type='password'"></div>
-            </div>
-            <small style="color: #666; font-size: 0.65rem;">*Click the Private Key to reveal. Never share this key with anyone.</small>
-        </div>
-
-        <!-- Section 2: Ghana Card Verification -->
-        <div class="card">
-            <h3>Identity Verification</h3>
-            <div class="field"><label>Ghana Card Number</label><input type="text" id="id-number" readonly></div>
-            <label>ID Document Proof</label>
-            <div class="id-preview-grid">
-                <div>
-                    <small style="color: #888; display: block; margin-bottom: 5px;">Front View</small>
-                    <img id="id-front-img" class="id-thumb" src="">
-                </div>
-                <div>
-                    <small style="color: #888; display: block; margin-bottom: 5px;">Back View</small>
-                    <img id="id-back-img" class="id-thumb" src="">
-                </div>
-            </div>
-        </div>
-
-        <!-- Section 3: Personal Info (Editable) -->
-        <div class="card">
-            <h3>Personal Information</h3>
-            <div class="grid">
-                <div class="field"><label>First Name</label><input type="text" id="fname"></div>
-                <div class="field"><label>Last Name</label><input type="text" id="lname"></div>
-                <div class="field"><label>Email</label><input type="email" id="email"></div>
-                <div class="field"><label>Phone</label><input type="tel" id="phone"></div>
-                <div class="field full" style="grid-column: span 2;"><label>Address</label><input type="text" id="address"></div>
-            </div>
-        </div>
-
-        <!-- Section 4: Business Details (Editable) -->
-        <div class="card">
-            <h3>Business & Branding</h3>
-            <div class="field"><label>Business Name</label><input type="text" id="biz-name"></div>
-            <div class="field"><label>Public Business Bio</label><textarea id="biz-info" rows="3"></textarea></div>
-        </div>
-
-        <button class="save-btn" id="save-btn">Update Profile Details</button>
+        <div id="upload-progress"></div>
+        <h2 id="display-name" style="margin-bottom: 5px;">Vendor Name</h2>
+        <p style="color: var(--gold); font-size: 0.75rem; margin-top: 0;" id="display-username">@username</p>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
+    <!-- Security -->
+    <div class="card">
+        <h3>Security Credentials</h3>
+        <div class="grid">
+            <div class="field"><label>User ID</label><input type="text" id="uid" readonly></div>
+            <div class="field"><label>Access Code</label><input type="text" id="admin-code" readonly></div>
+            <div class="field" style="grid-column: span 2;"><label>Public Key</label><input type="text" id="pub-key" readonly></div>
+        </div>
+    </div>
 
-        const firebaseConfig = { 
-            apiKey: "AIzaSyDtPxmJUBCweFBswJVflEVuc4jp6-m0BVM", 
-            authDomain: "prime-dusk.firebaseapp.com", 
-            projectId: "prime-dusk",
-            storageBucket: "prime-dusk.firebasestorage.app"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const storage = getStorage(app);
+    <!-- Verification -->
+    <div class="card">
+        <h3>Identity Verification</h3>
+        <div class="field"><label>Ghana Card Number</label><input type="text" id="id-number" readonly></div>
+        <div class="id-preview-grid">
+            <div><img id="id-front-img" class="id-thumb" src=""></div>
+            <div><img id="id-back-img" class="id-thumb" src=""></div>
+        </div>
+    </div>
 
-        const userPrefix = localStorage.getItem('eco_user_prefix');
-        if(!userPrefix) window.location.href = 'index.html';
+    <!-- Personal -->
+    <div class="card">
+        <h3>Personal Details</h3>
+        <div class="grid">
+            <div class="field"><label>First Name</label><input type="text" id="fname"></div>
+            <div class="field"><label>Last Name</label><input type="text" id="lname"></div>
+            <div class="field"><label>Email</label><input type="email" id="email"></div>
+            <div class="field"><label>Phone</label><input type="tel" id="phone"></div>
+            <div class="field" style="grid-column: span 2;"><label>Address</label><input type="text" id="address"></div>
+        </div>
+    </div>
 
-        // 1. Load Data from Multi-Admin Registry
-        async function loadProfile() {
-            const snap = await getDoc(doc(db, "users", userPrefix));
-            if(snap.exists()) {
-                const d = snap.data();
-                // System Keys
-                document.getElementById('uid').value = d.userID;
-                document.getElementById('admin-code').value = d.adminCode;
-                document.getElementById('pub-key').value = d.publicKey;
-                document.getElementById('priv-key').value = d.privateKey;
-                document.getElementById('display-username').innerText = "@" + d.username;
-                
-                // Verification
-                document.getElementById('id-number').value = d.verification.idNumber;
-                document.getElementById('id-front-img').src = d.verification.frontImage;
-                document.getElementById('id-back-img').src = d.verification.backImage;
+    <!-- Business -->
+    <div class="card">
+        <h3>Business Branding</h3>
+        <div class="field"><label>Business Name</label><input type="text" id="biz-name"></div>
+        <div class="field"><label>Business Bio</label><textarea id="biz-info" rows="3"></textarea></div>
+    </div>
 
-                // Personal
-                document.getElementById('fname').value = d.personal.fname;
-                document.getElementById('lname').value = d.personal.lname;
-                document.getElementById('email').value = d.personal.email;
-                document.getElementById('phone').value = d.personal.phone;
-                document.getElementById('address').value = d.personal.address || '';
-                document.getElementById('display-name').innerText = d.personal.fname + " " + d.personal.lname;
+    <button class="save-btn" id="save-btn">Save Changes</button>
+</div>
 
-                // Business
-                document.getElementById('biz-name').value = d.business.name;
-                document.getElementById('biz-info').value = d.business.info;
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
-                // Profile Picture
-                if(d.profilePic) document.getElementById('profile-img').src = d.profilePic;
-            }
+    const firebaseConfig = { apiKey: "AIzaSyDtPxmJUBCweFBswJVflEVuc4jp6-m0BVM", authDomain: "prime-dusk.firebaseapp.com", projectId: "prime-dusk", storageBucket: "prime-dusk.firebasestorage.app" };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    const userPrefix = localStorage.getItem('eco_user_prefix');
+    if(!userPrefix) window.location.href = 'login.html';
+
+    window.toggleSidebar = () => {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('overlay').classList.toggle('active');
+    };
+
+    document.getElementById('logout-btn').onclick = () => {
+        localStorage.clear();
+        window.location.href = 'login.html';
+    };
+
+    async function loadProfile() {
+        const snap = await getDoc(doc(db, "users", userPrefix));
+        if(snap.exists()) {
+            const d = snap.data();
+            document.getElementById('uid').value = d.userID;
+            document.getElementById('admin-code').value = d.adminCode;
+            document.getElementById('pub-key').value = d.publicKey;
+            document.getElementById('display-username').innerText = "@" + d.username;
+            document.getElementById('id-number').value = d.verification.idNumber;
+            document.getElementById('id-front-img').src = d.verification.frontImage;
+            document.getElementById('id-back-img').src = d.verification.backImage;
+            document.getElementById('fname').value = d.personal.fname;
+            document.getElementById('lname').value = d.personal.lname;
+            document.getElementById('email').value = d.personal.email;
+            document.getElementById('phone').value = d.personal.phone;
+            document.getElementById('address').value = d.personal.address || '';
+            document.getElementById('display-name').innerText = d.personal.fname + " " + d.personal.lname;
+            document.getElementById('biz-name').value = d.business.name;
+            document.getElementById('biz-info').value = d.business.info;
+            if(d.profilePic) document.getElementById('profile-img').src = d.profilePic;
+            
+            document.getElementById('display-biz-name').innerText = d.business.name;
+            document.getElementById('profile-initial').innerText = d.personal.fname[0].toUpperCase();
         }
-        loadProfile();
+    }
+    loadProfile();
 
-        // 2. Handle Profile Picture Upload
-        document.getElementById('file-input').onchange = e => {
-            const file = e.target.files[0];
-            if(!file) return;
-
-            const storageRef = ref(storage, `users/${userPrefix}/avatar`);
-            const uploadTask = uploadBytesResumable(storageRef, file);
-
-            uploadTask.on('state_changed', 
-                (snap) => {
-                    const progress = (snap.bytesTransferred / snap.totalBytes) * 100;
-                    document.getElementById('upload-progress').style.width = progress + '%';
-                },
-                null,
-                async () => {
-                    const url = await getDownloadURL(uploadTask.snapshot.ref);
-                    await updateDoc(doc(db, "users", userPrefix), { profilePic: url });
-                    document.getElementById('profile-img').src = url;
-                    document.getElementById('upload-progress').style.width = "0%";
-                    alert("Profile picture updated!");
-                }
-            );
-        };
-
-        // 3. Update Editable Details
-        document.getElementById('save-btn').onclick = async () => {
-            const btn = document.getElementById('save-btn');
-            btn.disabled = true; btn.innerText = "Processing Update...";
-
-            const updatedData = {
-                "personal.fname": document.getElementById('fname').value,
-                "personal.lname": document.getElementById('lname').value,
-                "personal.email": document.getElementById('email').value,
-                "personal.phone": document.getElementById('phone').value,
-                "personal.address": document.getElementById('address').value,
-                "business.name": document.getElementById('biz-name').value,
-                "business.info": document.getElementById('biz-info').value
-            };
-
-            try {
-                await updateDoc(doc(db, "users", userPrefix), updatedData);
-                alert("Profile and Business details updated successfully!");
-                location.reload();
-            } catch (e) {
-                alert("Update failed: " + e.message);
-                btn.disabled = false;
-                btn.innerText = "Update Profile Details";
+    document.getElementById('file-input').onchange = e => {
+        const file = e.target.files[0];
+        if(!file) return;
+        const storageRef = ref(storage, `users/${userPrefix}/avatar`);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+        uploadTask.on('state_changed', 
+            (snap) => {
+                const progress = (snap.bytesTransferred / snap.totalBytes) * 100;
+                document.getElementById('upload-progress').style.width = progress + '%';
+            },
+            null,
+            async () => {
+                const url = await getDownloadURL(uploadTask.snapshot.ref);
+                await updateDoc(doc(db, "users", userPrefix), { profilePic: url });
+                document.getElementById('profile-img').src = url;
+                document.getElementById('upload-progress').style.width = "0%";
+                alert("Profile picture updated!");
             }
+        );
+    };
+
+    document.getElementById('save-btn').onclick = async () => {
+        const btn = document.getElementById('save-btn');
+        btn.disabled = true; btn.innerText = "Saving...";
+        const updatedData = {
+            "personal.fname": document.getElementById('fname').value,
+            "personal.lname": document.getElementById('lname').value,
+            "personal.email": document.getElementById('email').value,
+            "personal.phone": document.getElementById('phone').value,
+            "personal.address": document.getElementById('address').value,
+            "business.name": document.getElementById('biz-name').value,
+            "business.info": document.getElementById('biz-info').value
         };
-    </script>
+        try {
+            await updateDoc(doc(db, "users", userPrefix), updatedData);
+            alert("Profile updated successfully!");
+            location.reload();
+        } catch (e) { alert("Error: " + e.message); btn.disabled = false; }
+    };
+</script>
 </body>
 </html>
