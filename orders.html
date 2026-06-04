@@ -7,82 +7,62 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --forest: #013220; --gold: #FFD700; --black: #050a05; --glass: rgba(255, 255, 255, 0.03); }
+        :root { --forest: #013220; --gold: #FFD700; --black: #050a05; --glass: rgba(255, 255, 255, 0.03); --border: rgba(255, 215, 0, 0.15); }
         body { font-family: 'Poppins', sans-serif; background: var(--black); color: white; margin: 0; overflow-x: hidden; }
 
-        /* Top Bar */
-        .top-bar { 
-            background: var(--forest); padding: 12px 5%; display: flex; 
-            justify-content: space-between; align-items: center; 
-            border-bottom: 1px solid var(--gold); position: sticky; top: 0; z-index: 500;
-        }
+        /* Navigation */
+        .top-bar { background: var(--forest); padding: 12px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gold); position: sticky; top: 0; z-index: 500; }
         .menu-trigger { color: var(--gold); font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; gap: 8px; }
         .menu-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
         /* Sidebar */
-        .sidebar {
-            position: fixed; top: 0; left: -300px; width: 260px; height: 100vh;
-            background: rgba(1, 50, 32, 0.98); backdrop-filter: blur(15px);
-            z-index: 2000; transition: 0.4s ease;
-            padding: 30px 20px; border-right: 1px solid var(--gold);
-            display: flex; flex-direction: column;
-        }
+        .sidebar { position: fixed; top: 0; left: -300px; width: 260px; height: 100vh; background: rgba(1, 50, 32, 0.98); backdrop-filter: blur(15px); z-index: 2000; transition: 0.4s ease; padding: 30px 20px; border-right: 1px solid var(--gold); }
         .sidebar.active { left: 0; }
-        .sidebar-header { text-align: center; margin-bottom: 30px; }
-        .profile-circle {
-            width: 60px; height: 60px; background: var(--gold); color: var(--forest);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; font-weight: 800; margin: 0 auto 10px; border: 2px solid rgba(255,255,255,0.1);
-        }
-        .nav-link { 
-            display: flex; align-items: center; gap: 12px; padding: 14px;
-            color: #ccc; text-decoration: none; border-radius: 10px;
-            margin-bottom: 5px; transition: 0.2s; font-size: 0.85rem;
-        }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 14px; color: #ccc; text-decoration: none; border-radius: 10px; margin-bottom: 5px; font-size: 0.85rem; }
         .nav-link.active { background: rgba(255,215,0,0.1); color: white; }
         .nav-badge { background: var(--gold); color: var(--forest); font-size: 0.65rem; padding: 2px 7px; border-radius: 50px; font-weight: 800; margin-left: auto; }
-
         .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1500; display: none; }
         .sidebar-overlay.active { display: block; }
 
-        /* Content Area */
-        #admin-content { padding: 20px 4%; }
-        h2 { font-family: 'Playfair Display', serif; color: var(--gold); text-align: center; font-size: 1.5rem; margin-bottom: 10px; }
+        /* Main Content */
+        #admin-content { padding: 20px 4%; text-align: center; }
+        h2 { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.5rem; margin-bottom: 5px; }
+        .stats-pill { display: inline-block; background: rgba(255,215,0,0.1); border: 1px solid var(--gold); color: var(--gold); padding: 5px 15px; border-radius: 50px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; }
+        #search-input { width: 90%; max-width: 320px; padding: 12px 20px; background: var(--glass); border: 1px solid var(--forest); border-radius: 30px; color: white; outline: none; display: block; margin: 0 auto 30px; text-align: center; font-size: 0.85rem; }
+
+        /* ORDER GRID (FOLDER STYLE) */
+        .orders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
         
-        /* Stats Pill */
-        .stats-pill { display: inline-block; background: rgba(255,215,0,0.1); border: 1px solid var(--gold); color: var(--gold); padding: 5px 15px; border-radius: 50px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
+        .order-folder { background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 15px; text-align: center; transition: 0.3s; cursor: pointer; position: relative; overflow: hidden; }
+        .order-folder:active { transform: scale(0.95); }
+        .order-folder::after { content: ''; position: absolute; top: 0; right: 0; width: 30px; height: 30px; background: linear-gradient(135deg, transparent 50%, rgba(255,215,0,0.1) 50%); }
 
-        /* Adjusted Search Bar */
-        #search-input { 
-            width: 90%; max-width: 320px; padding: 12px 20px; 
-            background: var(--glass); border: 1px solid var(--forest); 
-            border-radius: 30px; color: white; outline: none; 
-            display: block; margin: 0 auto 25px; font-size: 0.85rem; text-align: center;
-        }
+        .customer-avatar { width: 60px; height: 60px; background: var(--gold); color: var(--forest); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 800; margin: 0 auto 12px; border: 2px solid rgba(255,255,255,0.1); }
+        .order-name { font-weight: 600; font-size: 0.85rem; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .order-meta { font-family: monospace; font-size: 0.65rem; color: #888; margin-bottom: 8px; }
+        .order-total { color: var(--gold); font-weight: 800; font-size: 0.9rem; }
 
-        .table-container { background: var(--glass); border-radius: 15px; padding: 15px; border: 1px solid rgba(255,215,0,0.1); overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        th { padding: 12px; text-align: left; color: var(--gold); border-bottom: 2px solid var(--forest); font-size: 0.7rem; text-transform: uppercase; }
-        td { padding: 15px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
+        /* DETAIL MODAL */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 5000; display: none; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(10px); }
+        .modal-content { background: var(--forest); border: 1px solid var(--gold); border-radius: 25px; width: 100%; max-width: 450px; overflow: hidden; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        .item-wrapper { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; padding: 4px; border-radius: 6px; background: rgba(255,255,255,0.02); }
-        .item-thumb { width: 35px; height: 35px; border-radius: 5px; object-fit: cover; }
+        .modal-header { padding: 25px; border-bottom: 1px solid rgba(255,215,0,0.1); text-align: center; }
+        .modal-body { padding: 20px; max-height: 60vh; overflow-y: auto; }
         
-        .action-btns { display: flex; gap: 8px; }
-        .btn-action { width: 40px; height: 40px; border-radius: 10px; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; text-decoration: none; }
+        .item-row { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 12px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05); }
+        .item-img { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; }
+        
+        .modal-footer { padding: 20px; background: rgba(0,0,0,0.2); border-top: 1px solid rgba(255,215,0,0.1); }
+        .action-btns { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 10px; }
+        .btn-action { height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; border: none; font-size: 1rem; cursor: pointer; }
         .btn-call { background: #007bff; }
         .btn-wa { background: #25D366; }
-        .btn-done { background: var(--gold); color: var(--forest); font-weight: bold; width: auto; padding: 0 15px; font-size: 0.75rem; }
+        .btn-done { background: var(--gold); color: var(--forest); font-weight: 800; font-size: 0.75rem; text-transform: uppercase; }
 
-        @media (max-width: 850px) {
-            th { display: none; }
-            tr { display: block; background: rgba(255,255,255,0.02); margin-bottom: 15px; border-radius: 15px; padding: 15px; border: 1px solid rgba(255,215,0,0.05); }
-            td { display: block; padding: 8px 0; border: none; position: relative; padding-left: 35%; min-height: 25px; }
-            td::before { content: attr(data-label); position: absolute; left: 0; color: var(--gold); font-size: 0.6rem; font-weight: 700; text-transform: uppercase; }
-            td:last-child { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 10px; padding-top: 15px; padding-left: 0; }
-            td:last-child::before { display: none; }
-            .btn-action { flex: 1; height: 45px; }
-        }
+        .close-btn { position: absolute; top: 15px; right: 15px; color: white; cursor: pointer; font-size: 1.2rem; z-index: 10; }
+
+        @media (max-width: 480px) { .orders-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
     </style>
 </head>
 <body>
@@ -90,7 +70,7 @@
 <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-        <div class="profile-circle" id="profile-initial">?</div>
+        <div id="profile-initial" style="width: 60px; height: 60px; background: var(--gold); color: var(--forest); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; margin: 0 auto 10px; border: 2px solid white;">?</div>
         <div id="display-biz-name" style="color: var(--gold); font-family: 'Playfair Display';">Admin</div>
     </div>
     <nav>
@@ -106,6 +86,33 @@
     <a href="#" class="nav-link" onclick="localStorage.clear(); location.href='index.html'" style="margin-top: auto; color: #ff4444;"><i class="fa-solid fa-power-off"></i> Logout</a>
 </aside>
 
+<!-- ORDER DETAIL MODAL -->
+<div class="modal" id="orderModal">
+    <div class="modal-content">
+        <div class="close-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></div>
+        <div class="modal-header">
+            <div class="customer-avatar" id="m-avatar">?</div>
+            <h3 id="m-name" style="margin:0; font-family:'Playfair Display'; color:var(--gold);">Customer Name</h3>
+            <p id="m-phone" style="color:#888; font-size:0.8rem; margin:5px 0;"></p>
+            <div class="order-meta" id="m-id">ID: 000000</div>
+        </div>
+        <div class="modal-body" id="m-items">
+            <!-- Items injected here -->
+        </div>
+        <div class="modal-footer">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-weight:800;">
+                <span>Total Amount:</span>
+                <span id="m-total" style="color:var(--gold); font-size:1.2rem;">₵0.00</span>
+            </div>
+            <div class="action-btns">
+                <a href="" id="m-call" class="btn-action btn-call"><i class="fa-solid fa-phone"></i></a>
+                <a href="" id="m-wa" target="_blank" class="btn-action btn-wa"><i class="fa-brands fa-whatsapp"></i></a>
+                <button id="m-done" class="btn-action btn-done">Complete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="admin-content">
     <div class="top-bar">
         <div class="menu-trigger" onclick="toggleSidebar()">
@@ -116,22 +123,15 @@
         <div style="width: 25px;"></div>
     </div>
 
-    <div style="text-align: center; margin-top: 20px;">
+    <div style="margin-top: 20px;">
         <h2>Active Orders</h2>
         <div class="stats-pill"><span id="top-count">0</span> Active Orders</div>
     </div>
 
     <input type="text" id="search-input" placeholder="Search customer or phone...">
 
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th><th>Date</th><th>Customer</th><th>Items</th><th>Total</th><th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="ordersTable"></tbody>
-        </table>
+    <div class="orders-grid" id="orders-list">
+        <!-- Order Folders injected here -->
     </div>
 </div>
 
@@ -154,13 +154,12 @@
         document.getElementById('overlay').classList.toggle('active');
     };
 
-    let allOrders = [];
+    let allOrders = [], selectedID = null;
 
     onSnapshot(collection(db, `${activePrefix}_orders`), snap => {
         allOrders = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         allOrders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
         
-        // Update Counters
         const count = allOrders.length;
         document.getElementById('top-count').innerText = count;
         document.getElementById('side-count').innerText = count;
@@ -169,52 +168,69 @@
     });
 
     function render() {
-        const table = document.getElementById('ordersTable');
+        const list = document.getElementById('orders-list');
         const term = document.getElementById('search-input').value.toLowerCase();
-        table.innerHTML = "";
-
+        
         const filtered = allOrders.filter(o => o.customer.name.toLowerCase().includes(term) || o.customer.phone.includes(term));
 
-        filtered.forEach(order => {
-            const date = new Date(order.timestamp).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-            
-            const cleanPhone = order.customer.phone.replace(/\D/g, '');
-            const waPhone = cleanPhone.startsWith('0') ? '233' + cleanPhone.substring(1) : cleanPhone;
-
-            let itemsHtml = order.items.map(item => `
-                <div class="item-wrapper">
-                    <img src="${item.image}" class="item-thumb" onerror="this.src='https://via.placeholder.com/40'">
-                    <div style="flex:1"><b>${item.name}</b><br><small>x${item.qty} | ₵${item.price}</small></div>
-                </div>`).join('');
-
-            table.innerHTML += `
-                <tr>
-                    <td data-label="ID" style="color:var(--gold); font-family:monospace;">${order.salesID || 'N/A'}</td>
-                    <td data-label="Date" style="color:#888;">${date}</td>
-                    <td data-label="Customer"><b>${order.customer.name}</b><br><small>${order.customer.phone}</small></td>
-                    <td data-label="Items">${itemsHtml}</td>
-                    <td data-label="Total" style="color:var(--gold); font-weight:800;">₵${order.totalAmount.toFixed(2)}</td>
-                    <td>
-                        <div class="action-btns">
-                            <a href="tel:${order.customer.phone}" class="btn-action btn-call"><i class="fa-solid fa-phone"></i></a>
-                            <a href="https://wa.me/${waPhone}" target="_blank" class="btn-action btn-wa"><i class="fa-brands fa-whatsapp"></i></a>
-                            <button class="btn-action btn-done" onclick="completeOrder('${order.id}')">Done</button>
-                        </div>
-                    </td>
-                </tr>`;
-        });
+        list.innerHTML = filtered.map(o => {
+            const initial = o.customer.name.charAt(0).toUpperCase();
+            return `
+                <div class="order-folder" onclick="openOrder('${o.id}')">
+                    <div class="customer-avatar">${initial}</div>
+                    <div class="order-name">${o.customer.name}</div>
+                    <div class="order-meta">${o.salesID || 'NO ID'}</div>
+                    <div class="order-total">₵${o.totalAmount.toFixed(2)}</div>
+                </div>
+            `;
+        }).join('');
     }
 
     document.getElementById('search-input').oninput = render;
 
-    window.completeOrder = async (id) => {
-        if(!confirm("Complete and move to history?")) return;
-        const orderData = allOrders.find(o => o.id === id);
-        try {
-            await addDoc(collection(db, `${activePrefix}_completed_orders`), { ...orderData, completedAt: new Date().toISOString() });
-            await deleteDoc(doc(db, `${activePrefix}_orders`, id));
-        } catch (e) { alert("Error updating order."); }
+    window.openOrder = (id) => {
+        selectedID = id;
+        const o = allOrders.find(x => x.id === id);
+        
+        document.getElementById('m-avatar').innerText = o.customer.name.charAt(0).toUpperCase();
+        document.getElementById('m-name').innerText = o.customer.name;
+        document.getElementById('m-phone').innerText = o.customer.phone;
+        document.getElementById('m-id').innerText = "ORDER ID: " + (o.salesID || 'N/A');
+        document.getElementById('m-total').innerText = "₵" + o.totalAmount.toFixed(2);
+        
+        // Actions
+        const cleanPhone = o.customer.phone.replace(/\D/g, '');
+        const waPhone = cleanPhone.startsWith('0') ? '233' + cleanPhone.substring(1) : cleanPhone;
+        document.getElementById('m-call').href = "tel:" + o.customer.phone;
+        document.getElementById('m-wa').href = "https://wa.me/" + waPhone;
+        
+        // Items
+        document.getElementById('m-items').innerHTML = o.items.map(i => `
+            <div class="item-row">
+                <img src="${i.image}" class="item-img" onerror="this.src='https://via.placeholder.com/50'">
+                <div style="flex:1">
+                    <div style="font-size:0.85rem; font-weight:600;">${i.name}</div>
+                    <div style="font-size:0.7rem; color:#aaa;">Qty: ${i.qty} | ₵${i.price}</div>
+                </div>
+                <div style="font-weight:700; color:var(--gold);">₵${(i.qty * i.price).toFixed(2)}</div>
+            </div>
+        `).join('');
+
+        document.getElementById('m-done').onclick = () => finishOrder(id);
+        document.getElementById('orderModal').style.display = 'flex';
     };
+
+    window.closeModal = () => { document.getElementById('orderModal').style.display = 'none'; };
+
+    async function finishOrder(id) {
+        if(!confirm("Complete and move to history?")) return;
+        const oData = allOrders.find(o => o.id === id);
+        try {
+            await addDoc(collection(db, `${activePrefix}_completed_orders`), { ...oData, completedAt: new Date().toISOString() });
+            await deleteDoc(doc(db, `${activePrefix}_orders`, id));
+            closeModal();
+        } catch (e) { alert("Error completing order."); }
+    }
 </script>
 </body>
 </html>
