@@ -17,7 +17,8 @@
             justify-content: space-between; align-items: center; 
             border-bottom: 1px solid var(--gold); position: sticky; top: 0; z-index: 500;
         }
-        .menu-trigger { color: var(--gold); font-size: 1.3rem; cursor: pointer; }
+        .menu-trigger { color: var(--gold); font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .menu-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
         .top-logo { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.1rem; }
 
         /* Sliding Sidebar */
@@ -43,6 +44,9 @@
         }
         .nav-link i { color: var(--gold); width: 18px; text-align: center; }
         .nav-link:hover, .nav-link.active { background: rgba(255,215,0,0.1); color: white; }
+        
+        /* Notification Badge */
+        .nav-badge { background: var(--gold); color: var(--forest); font-size: 0.65rem; padding: 2px 7px; border-radius: 50px; font-weight: 800; margin-left: auto; }
 
         .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1500; display: none; }
         .sidebar-overlay.active { display: block; }
@@ -101,7 +105,10 @@
         <div class="sidebar-biz-name" id="display-biz-name">Admin Portal</div>
     </div>
     <nav class="nav-list" style="list-style: none; padding: 0;">
-        <a href="orders.html" class="nav-link"><i class="fa-solid fa-house"></i> Active Orders</a>
+        <a href="orders.html" class="nav-link">
+            <i class="fa-solid fa-house"></i> Active Orders
+            <span class="nav-badge" id="side-count">0</span>
+        </a>
         <a href="#" class="nav-link active" onclick="toggleSidebar()"><i class="fa-solid fa-plus"></i> Add New Item</a>
         <a href="inventory.html" class="nav-link"><i class="fa-solid fa-boxes-stacked"></i> Inventory</a>
         <a href="completed_orders.html" class="nav-link"><i class="fa-solid fa-check-double"></i> Completed Orders</a>
@@ -111,7 +118,10 @@
 </aside>
 
 <div class="top-bar">
-    <div class="menu-trigger" onclick="toggleSidebar()"><i class="fa-solid fa-bars-staggered"></i></div>
+    <div class="menu-trigger" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars-staggered"></i>
+        <span class="menu-label">Menu</span>
+    </div>
     <div class="top-logo">ECO<span>MARKET</span></div>
     <div style="width: 20px;"></div>
 </div>
@@ -189,12 +199,6 @@
 </div>
 
 <script type="module">
-    // At the top of your module scripts
-    const activePrefix = localStorage.getItem('eco_user_prefix');
-    if(!activePrefix) window.location.href = 'login.html';
-
-    document.getElementById('display-biz-name').innerText = localStorage.getItem('eco_biz_name');
-    document.getElementById('profile-initial').innerText = localStorage.getItem('eco_user_initial');
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
@@ -211,6 +215,14 @@
         document.getElementById('sidebar').classList.toggle('active');
         document.getElementById('overlay').classList.toggle('active');
     };
+
+    // SETUP HEADER & BADGE
+    document.getElementById('display-biz-name').innerText = localStorage.getItem('eco_biz_name') || "Admin Portal";
+    document.getElementById('profile-initial').innerText = localStorage.getItem('eco_user_initial') || "?";
+
+    onSnapshot(collection(db, `${userPrefix}_orders`), snap => {
+        document.getElementById('side-count').innerText = snap.docs.length;
+    });
 
     (async () => {
         const userSnap = await getDoc(doc(db, "users", userPrefix));

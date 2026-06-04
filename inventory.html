@@ -25,71 +25,52 @@
             position: fixed; top: 0; left: -300px; width: 260px; height: 100vh;
             background: rgba(1, 50, 32, 0.98); backdrop-filter: blur(15px);
             z-index: 2000; transition: 0.4s ease; padding: 30px 20px; border-right: 1px solid var(--gold);
+            display: flex; flex-direction: column;
         }
         .sidebar.active { left: 0; }
         .nav-link { display: flex; align-items: center; gap: 12px; padding: 14px; color: #ccc; text-decoration: none; border-radius: 10px; margin-bottom: 5px; font-size: 0.85rem; }
         .nav-link.active { background: rgba(255,215,0,0.1); color: var(--gold); }
+        .nav-badge { background: var(--gold); color: var(--forest); font-size: 0.65rem; padding: 2px 7px; border-radius: 50px; font-weight: 800; margin-left: auto; }
+
         .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1500; display: none; }
         .sidebar-overlay.active { display: block; }
 
         /* Content Area */
         #admin-content { padding: 20px 4%; }
-        h2 { font-family: 'Playfair Display', serif; color: var(--gold); text-align: center; margin-bottom: 20px; font-size: 1.5rem; }
-        #search-input { width: 100%; max-width: 500px; padding: 12px 20px; background: var(--glass); border: 1px solid var(--forest); border-radius: 25px; color: white; outline: none; display: block; margin: 15px auto; font-size: 0.85rem; margin-bottom: 30px; }
-
-        /* PRODUCT GRID ("FOLDER" STYLE) */
-        .inventory-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
-            gap: 15px; 
-        }
-
-        .item-folder { 
-            background: var(--glass); border: 1px solid var(--border); 
-            border-radius: 20px; overflow: hidden; transition: 0.3s; 
-            cursor: pointer; position: relative;
-        }
-        .item-folder:active { transform: scale(0.95); }
+        h2 { font-family: 'Playfair Display', serif; color: var(--gold); text-align: center; margin-bottom: 10px; font-size: 1.5rem; }
         
+        /* Adjusted Search Bar */
+        #search-input { 
+            width: 90%; max-width: 320px; padding: 12px 20px; 
+            background: var(--glass); border: 1px solid var(--forest); 
+            border-radius: 30px; color: white; outline: none; 
+            display: block; margin: 0 auto 30px; font-size: 0.85rem; text-align: center;
+        }
+
+        /* PRODUCT GRID */
+        .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+        .item-folder { background: var(--glass); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; transition: 0.3s; cursor: pointer; position: relative; }
         .folder-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-bottom: 1px solid var(--border); }
         .folder-info { padding: 12px; text-align: center; }
         .folder-name { font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .folder-price { color: var(--gold); font-weight: 800; font-size: 0.9rem; }
-
-        .stock-tag { position: absolute; top: 8px; left: 8px; padding: 3px 8px; border-radius: 6px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; }
+        .stock-tag { position: absolute; top: 8px; left: 8px; padding: 3px 8px; border-radius: 6px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; z-index: 5; }
         .tag-in { background: #25D366; color: #000; }
         .tag-out { background: #ff4444; color: #fff; }
 
         /* MODALS */
-        .modal { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9); 
-            z-index: 5000; display: none; justify-content: center; 
-            align-items: center; padding: 20px; backdrop-filter: blur(10px);
-        }
-        .modal-content { 
-            background: var(--forest); border: 1px solid var(--gold); 
-            border-radius: 25px; width: 100%; max-width: 400px; 
-            overflow: hidden; position: relative; 
-            animation: slideUp 0.3s ease-out;
-        }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 5000; display: none; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(10px); }
+        .modal-content { background: var(--forest); border: 1px solid var(--gold); border-radius: 25px; width: 100%; max-width: 400px; overflow: hidden; position: relative; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
         .modal-img { width: 100%; max-height: 250px; object-fit: cover; }
         .modal-body { padding: 20px; }
         .modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        
         .btn-edit { background: var(--gold); color: var(--forest); border: none; padding: 14px; border-radius: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
         .btn-del { background: rgba(255,68,68,0.2); color: #ff4444; border: 1px solid #ff4444; padding: 14px; border-radius: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
         .close-modal { position: absolute; top: 15px; right: 15px; color: white; background: rgba(0,0,0,0.5); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .edit-input { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid #444; border-radius: 10px; color: white; margin-bottom: 10px; outline: none; }
 
-        /* EDIT SECTION (Nested in Modal) */
-        #edit-fields { display: none; }
-        .edit-input { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid #444; border-radius: 10px; color: white; margin-bottom: 10px; }
-
-        @media (max-width: 480px) {
-            .inventory-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-            h2 { font-size: 1.2rem; }
-        }
+        @media (max-width: 480px) { .inventory-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
     </style>
 </head>
 <body>
@@ -101,45 +82,45 @@
         <div id="display-biz-name" style="color: var(--gold); font-family: 'Playfair Display';">Admin</div>
     </div>
     <nav>
-        <a href="orders.html" class="nav-link"><i class="fa-solid fa-house"></i> Active Orders</a>
+        <a href="orders.html" class="nav-link">
+            <i class="fa-solid fa-house"></i> Active Orders
+            <span class="nav-badge" id="side-count">0</span>
+        </a>
         <a href="add_items.html" class="nav-link"><i class="fa-solid fa-plus"></i> Add New Item</a>
         <a href="#" class="nav-link active"><i class="fa-solid fa-boxes-stacked"></i> Inventory</a>
         <a href="completed_orders.html" class="nav-link"><i class="fa-solid fa-check-double"></i> History</a>
         <a href="profile.html" class="nav-link"><i class="fa-solid fa-user-gear"></i> My Profile</a>
     </nav>
+    <a href="#" class="nav-link" onclick="localStorage.clear(); location.href='index.html'" style="margin-top: auto; color: #ff4444;"><i class="fa-solid fa-power-off"></i> Logout</a>
 </aside>
 
-<!-- VIEW/EDIT MODAL -->
+<!-- DETAIL MODAL -->
 <div class="modal" id="detailModal">
     <div class="modal-content">
         <div class="close-modal" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></div>
         <img id="m-img" class="modal-img" src="">
-        
         <div class="modal-body">
             <div id="view-fields">
                 <h3 id="m-name" style="margin:0; font-family:'Playfair Display'; color:var(--gold);">Product Name</h3>
                 <p id="m-id" style="font-family:monospace; color:#888; font-size:0.7rem; margin:5px 0;"></p>
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
                     <span id="m-price" style="font-size:1.4rem; font-weight:800;">₵0.00</span>
-                    <span id="m-stock" class="stock-tag">STOCK: 0</span>
+                    <span id="m-stock" style="font-size: 0.75rem; font-weight: bold; background: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 8px;">STOCK: 0</span>
                 </div>
-                <p id="m-cat" style="font-size:0.75rem; color:#aaa; text-transform:uppercase; margin-top:10px;"></p>
                 <div class="modal-btns">
                     <button class="btn-edit" onclick="showEdit()"><i class="fa-solid fa-pen"></i> Edit</button>
                     <button class="btn-del" onclick="handleDelete()"><i class="fa-solid fa-trash"></i> Delete</button>
                 </div>
             </div>
-
-            <!-- HIDDEN EDIT FORM -->
-            <div id="edit-fields">
+            <div id="edit-fields" style="display:none;">
                 <h3 style="color:var(--gold); font-family:'Playfair Display'; margin-bottom:15px;">Update Product</h3>
-                <input type="text" id="e-name" class="edit-input" placeholder="Product Name">
-                <input type="number" id="e-price" class="edit-input" placeholder="Price (₵)" step="0.01">
-                <input type="number" id="e-stock" class="edit-input" placeholder="Stock Quantity">
-                <input type="text" id="e-cat" class="edit-input" placeholder="Category">
+                <input type="text" id="e-name" class="edit-input">
+                <input type="number" id="e-price" class="edit-input" step="0.01">
+                <input type="number" id="e-stock" class="edit-input">
+                <input type="text" id="e-cat" class="edit-input">
                 <div class="modal-btns">
-                    <button class="btn-edit" onclick="handleUpdate()">Save Updates</button>
-                    <button class="cancel-btn" onclick="hideEdit()" style="background:transparent; border:1px solid #444; color:#888; border-radius:12px; cursor:pointer;">Cancel</button>
+                    <button class="btn-edit" onclick="handleUpdate()">Save</button>
+                    <button class="btn-del" onclick="hideEdit()" style="background:transparent; color:#888; border-color:#444;">Cancel</button>
                 </div>
             </div>
         </div>
@@ -159,9 +140,7 @@
     <h2>Shop Inventory</h2>
     <input type="text" id="search-input" placeholder="Search by name or ID...">
 
-    <div class="inventory-grid" id="inventory-list">
-        <!-- Folders will be injected here -->
-    </div>
+    <div class="inventory-grid" id="inventory-list"></div>
 </div>
 
 <script type="module">
@@ -175,8 +154,13 @@
     const userPrefix = localStorage.getItem('eco_user_prefix');
     if(!userPrefix) window.location.href = 'index.html';
 
-    document.getElementById('display-biz-name').innerText = localStorage.getItem('eco_biz_name');
-    document.getElementById('profile-initial').innerText = localStorage.getItem('eco_user_initial');
+    document.getElementById('display-biz-name').innerText = localStorage.getItem('eco_biz_name') || "Admin";
+    document.getElementById('profile-initial').innerText = localStorage.getItem('eco_user_initial') || "?";
+
+    // SIDEBAR BADGE
+    onSnapshot(collection(db, `${userPrefix}_orders`), snap => {
+        document.getElementById('side-count').innerText = snap.docs.length;
+    });
 
     window.toggleSidebar = () => {
         document.getElementById('sidebar').classList.toggle('active');
@@ -184,7 +168,6 @@
     };
 
     let products = [], selectedID = null;
-
     onSnapshot(collection(db, `${userPrefix}_products`), snap => {
         products = snap.docs.map(doc => ({ firebaseID: doc.id, ...doc.data() }));
         render();
@@ -193,36 +176,30 @@
     function render() {
         const list = document.getElementById('inventory-list');
         const term = document.getElementById('search-input').value.toLowerCase();
-        
         list.innerHTML = products.filter(p => p.name.toLowerCase().includes(term) || p.productID.toLowerCase().includes(term)).map(p => {
             const isOut = !p.unlimited && p.stock <= 0;
-            return `
-                <div class="item-folder" onclick="openModal('${p.firebaseID}')">
-                    <span class="stock-tag ${isOut ? 'tag-out' : 'tag-in'}">${isOut ? 'Out' : 'In Stock'}</span>
-                    <img src="${p.image}" class="folder-img">
-                    <div class="folder-info">
-                        <div class="folder-name">${p.name}</div>
-                        <div class="folder-price">₵${p.price.toFixed(2)}</div>
-                    </div>
+            return `<div class="item-folder" onclick="openModal('${p.firebaseID}')">
+                <span class="stock-tag ${isOut ? 'tag-out' : 'tag-in'}">${isOut ? 'Out' : 'In Stock'}</span>
+                <img src="${p.image}" class="folder-img">
+                <div class="folder-info">
+                    <div class="folder-name">${p.name}</div>
+                    <div class="folder-price">₵${p.price.toFixed(2)}</div>
                 </div>
-            `;
+            </div>`;
         }).join('');
     }
 
     document.getElementById('search-input').oninput = render;
 
-    // MODAL LOGIC
     window.openModal = (id) => {
         selectedID = id;
         const p = products.find(x => x.firebaseID === id);
         document.getElementById('m-img').src = p.image;
         document.getElementById('m-name').innerText = p.name;
-        document.getElementById('m-id').innerText = "PRODUCT ID: " + p.productID;
+        document.getElementById('m-id').innerText = "ID: " + p.productID;
         document.getElementById('m-price').innerText = "₵" + p.price.toFixed(2);
         document.getElementById('m-stock').innerText = p.unlimited ? "STOCK: ∞" : "STOCK: " + p.stock;
-        document.getElementById('m-cat').innerText = "Category: " + p.category;
         
-        // Prep Edit fields
         document.getElementById('e-name').value = p.name;
         document.getElementById('e-price').value = p.price;
         document.getElementById('e-stock').value = p.stock;
@@ -232,37 +209,18 @@
         hideEdit();
     };
 
-    window.closeModal = () => { document.getElementById('detailModal').style.display = 'none'; };
-
-    window.showEdit = () => {
-        document.getElementById('view-fields').style.display = 'none';
-        document.getElementById('edit-fields').style.display = 'block';
-    };
-
-    window.hideEdit = () => {
-        document.getElementById('view-fields').style.display = 'block';
-        document.getElementById('edit-fields').style.display = 'none';
-    };
+    window.closeModal = () => document.getElementById('detailModal').style.display = 'none';
+    window.showEdit = () => { document.getElementById('view-fields').style.display = 'none'; document.getElementById('edit-fields').style.display = 'block'; };
+    window.hideEdit = () => { document.getElementById('view-fields').style.display = 'block'; document.getElementById('edit-fields').style.display = 'none'; };
 
     window.handleUpdate = async () => {
-        const data = {
-            name: document.getElementById('e-name').value,
-            price: parseFloat(document.getElementById('e-price').value),
-            stock: parseInt(document.getElementById('e-stock').value),
-            category: document.getElementById('e-cat').value
-        };
-        try {
-            await updateDoc(doc(db, `${userPrefix}_products`, selectedID), data);
-            closeModal();
-            alert("Updated Successfully!");
-        } catch (e) { alert("Error updating"); }
+        const data = { name: document.getElementById('e-name').value, price: parseFloat(document.getElementById('e-price').value), stock: parseInt(document.getElementById('e-stock').value), category: document.getElementById('e-cat').value };
+        await updateDoc(doc(db, `${userPrefix}_products`, selectedID), data);
+        closeModal();
     };
 
     window.handleDelete = async () => {
-        if(confirm("Permanently delete this item?")) {
-            await deleteDoc(doc(db, `${userPrefix}_products`, selectedID));
-            closeModal();
-        }
+        if(confirm("Delete item?")) { await deleteDoc(doc(db, `${userPrefix}_products`, selectedID)); closeModal(); }
     };
 </script>
 </body>
