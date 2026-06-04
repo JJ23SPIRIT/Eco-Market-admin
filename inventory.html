@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Inventory | EcoMarket</title>
+    <title>Shop Inventory | EcoMarket Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -11,54 +11,84 @@
         
         body { font-family: 'Poppins', sans-serif; background: var(--black); color: white; margin: 0; overflow-x: hidden; }
 
-        /* Top Bar & Sidebar */
-        .top-bar { background: var(--forest); padding: 12px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gold); position: sticky; top: 0; z-index: 500; }
-        .menu-trigger { color: var(--gold); font-size: 1.3rem; cursor: pointer; }
-        .sidebar { position: fixed; top: 0; left: -300px; width: 260px; height: 100vh; background: rgba(1, 50, 32, 0.98); backdrop-filter: blur(15px); z-index: 2000; transition: 0.4s ease; padding: 30px 20px; border-right: 1px solid var(--gold); display: flex; flex-direction: column; }
+        /* Top Bar */
+        .top-bar { 
+            background: var(--forest); padding: 12px 5%; display: flex; 
+            justify-content: space-between; align-items: center; 
+            border-bottom: 1px solid var(--gold); position: sticky; top: 0; z-index: 500;
+        }
+        .menu-trigger { color: var(--gold); font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .menu-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed; top: 0; left: -300px; width: 260px; height: 100vh;
+            background: rgba(1, 50, 32, 0.98); backdrop-filter: blur(15px);
+            z-index: 2000; transition: 0.4s ease; padding: 30px 20px; border-right: 1px solid var(--gold);
+        }
         .sidebar.active { left: 0; }
         .nav-link { display: flex; align-items: center; gap: 12px; padding: 14px; color: #ccc; text-decoration: none; border-radius: 10px; margin-bottom: 5px; font-size: 0.85rem; }
-        .nav-link.active { background: rgba(255,215,0,0.1); color: white; }
+        .nav-link.active { background: rgba(255,215,0,0.1); color: var(--gold); }
         .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1500; display: none; }
         .sidebar-overlay.active { display: block; }
 
         /* Content Area */
         #admin-content { padding: 20px 4%; }
-        h2 { font-family: 'Playfair Display', serif; color: var(--gold); text-align: center; font-size: 1.5rem; margin-bottom: 20px; }
-        #search-input { width: 100%; max-width: 500px; padding: 12px 20px; background: var(--glass); border: 1px solid var(--forest); border-radius: 25px; color: white; outline: none; display: block; margin: 15px auto; font-size: 0.85rem; }
+        h2 { font-family: 'Playfair Display', serif; color: var(--gold); text-align: center; margin-bottom: 20px; font-size: 1.5rem; }
+        #search-input { width: 100%; max-width: 500px; padding: 12px 20px; background: var(--glass); border: 1px solid var(--forest); border-radius: 25px; color: white; outline: none; display: block; margin: 15px auto; font-size: 0.85rem; margin-bottom: 30px; }
 
-        .table-container { background: var(--glass); border-radius: 15px; padding: 10px; border: 1px solid rgba(255,215,0,0.1); overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        th { padding: 12px; text-align: left; color: var(--gold); border-bottom: 2px solid var(--forest); font-size: 0.7rem; text-transform: uppercase; }
-        td { padding: 15px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
+        /* PRODUCT GRID ("FOLDER" STYLE) */
+        .inventory-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
+            gap: 15px; 
+        }
 
-        .prod-img { width: 45px; height: 45px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,215,0,0.2); }
-        .stock-badge { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; }
-        .stock-infinite { background: rgba(0, 255, 136, 0.1); color: #00ff88; }
-        .stock-low { background: rgba(255, 68, 68, 0.1); color: #ff4444; }
+        .item-folder { 
+            background: var(--glass); border: 1px solid var(--border); 
+            border-radius: 20px; overflow: hidden; transition: 0.3s; 
+            cursor: pointer; position: relative;
+        }
+        .item-folder:active { transform: scale(0.95); }
+        
+        .folder-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-bottom: 1px solid var(--border); }
+        .folder-info { padding: 12px; text-align: center; }
+        .folder-name { font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .folder-price { color: var(--gold); font-weight: 800; font-size: 0.9rem; }
 
-        .action-btns { display: flex; gap: 8px; }
-        .btn-edit { background: var(--gold); color: var(--forest); border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.75rem; font-weight: 700; }
-        .btn-del { background: rgba(255, 68, 68, 0.2); color: #ff4444; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.75rem; }
+        .stock-tag { position: absolute; top: 8px; left: 8px; padding: 3px 8px; border-radius: 6px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; }
+        .tag-in { background: #25D366; color: #000; }
+        .tag-out { background: #ff4444; color: #fff; }
 
-        /* EDIT MODAL */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 3000; display: none; justify-content: center; align-items: center; padding: 20px; }
-        .modal-content { background: var(--forest); border: 1px solid var(--gold); padding: 25px; border-radius: 20px; width: 100%; max-width: 450px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .modal h3 { color: var(--gold); margin-top: 0; font-family: 'Playfair Display'; }
-        .modal label { display: block; font-size: 0.65rem; color: #aaa; text-transform: uppercase; margin-bottom: 5px; margin-top: 15px; }
-        .modal input, .modal select { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid #444; border-radius: 10px; color: white; outline: none; box-sizing: border-box; }
-        .modal-btns { display: flex; gap: 10px; margin-top: 25px; }
-        .save-btn { flex: 2; background: var(--gold); color: var(--forest); border: none; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; }
-        .cancel-btn { flex: 1; background: transparent; border: 1px solid #444; color: #888; border-radius: 10px; cursor: pointer; }
+        /* MODALS */
+        .modal { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9); 
+            z-index: 5000; display: none; justify-content: center; 
+            align-items: center; padding: 20px; backdrop-filter: blur(10px);
+        }
+        .modal-content { 
+            background: var(--forest); border: 1px solid var(--gold); 
+            border-radius: 25px; width: 100%; max-width: 400px; 
+            overflow: hidden; position: relative; 
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* MOBILE SCALE */
-        @media (max-width: 850px) {
-            th { display: none; }
-            tr { display: block; background: rgba(255,255,255,0.02); margin-bottom: 12px; border-radius: 15px; padding: 15px; border: 1px solid rgba(255,215,0,0.05); }
-            td { display: block; padding: 8px 0; border: none; position: relative; padding-left: 40%; min-height: 30px; }
-            td::before { content: attr(data-label); position: absolute; left: 0; color: var(--gold); font-size: 0.65rem; font-weight: 700; text-transform: uppercase; }
-            .action-btns { margin-top: 10px; }
-            .action-btns button { flex: 1; padding: 12px; }
-            .prod-img { width: 60px; height: 60px; margin-bottom: 10px; }
+        .modal-img { width: 100%; max-height: 250px; object-fit: cover; }
+        .modal-body { padding: 20px; }
+        .modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        
+        .btn-edit { background: var(--gold); color: var(--forest); border: none; padding: 14px; border-radius: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
+        .btn-del { background: rgba(255,68,68,0.2); color: #ff4444; border: 1px solid #ff4444; padding: 14px; border-radius: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
+        .close-modal { position: absolute; top: 15px; right: 15px; color: white; background: rgba(0,0,0,0.5); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+        /* EDIT SECTION (Nested in Modal) */
+        #edit-fields { display: none; }
+        .edit-input { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid #444; border-radius: 10px; color: white; margin-bottom: 10px; }
+
+        @media (max-width: 480px) {
+            .inventory-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            h2 { font-size: 1.2rem; }
         }
     </style>
 </head>
@@ -67,7 +97,7 @@
 <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
 <aside class="sidebar" id="sidebar">
     <div style="text-align: center; margin-bottom: 30px;">
-        <div id="profile-initial" style="width: 60px; height: 60px; background: var(--gold); color: var(--forest); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; margin: 0 auto 10px;">?</div>
+        <div id="profile-initial" style="width: 60px; height: 60px; background: var(--gold); color: var(--forest); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; margin: 0 auto 10px; border: 2px solid white;">?</div>
         <div id="display-biz-name" style="color: var(--gold); font-family: 'Playfair Display';">Admin</div>
     </div>
     <nav>
@@ -79,41 +109,58 @@
     </nav>
 </aside>
 
-<!-- Edit Modal -->
-<div class="modal" id="editModal">
+<!-- VIEW/EDIT MODAL -->
+<div class="modal" id="detailModal">
     <div class="modal-content">
-        <h3>Edit Product</h3>
-        <input type="hidden" id="edit-id">
-        <label>Product Name</label>
-        <input type="text" id="edit-name">
-        <div style="display: flex; gap: 10px;">
-            <div style="flex: 1;"><label>Price (₵)</label><input type="number" id="edit-price" step="0.01"></div>
-            <div style="flex: 1;"><label>Stock</label><input type="number" id="edit-stock"></div>
-        </div>
-        <label>Category</label>
-        <input type="text" id="edit-cat">
-        <div class="modal-btns">
-            <button class="cancel-btn" onclick="closeModal()">Cancel</button>
-            <button class="save-btn" onclick="updateProduct()">Save Changes</button>
+        <div class="close-modal" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></div>
+        <img id="m-img" class="modal-img" src="">
+        
+        <div class="modal-body">
+            <div id="view-fields">
+                <h3 id="m-name" style="margin:0; font-family:'Playfair Display'; color:var(--gold);">Product Name</h3>
+                <p id="m-id" style="font-family:monospace; color:#888; font-size:0.7rem; margin:5px 0;"></p>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
+                    <span id="m-price" style="font-size:1.4rem; font-weight:800;">₵0.00</span>
+                    <span id="m-stock" class="stock-tag">STOCK: 0</span>
+                </div>
+                <p id="m-cat" style="font-size:0.75rem; color:#aaa; text-transform:uppercase; margin-top:10px;"></p>
+                <div class="modal-btns">
+                    <button class="btn-edit" onclick="showEdit()"><i class="fa-solid fa-pen"></i> Edit</button>
+                    <button class="btn-del" onclick="handleDelete()"><i class="fa-solid fa-trash"></i> Delete</button>
+                </div>
+            </div>
+
+            <!-- HIDDEN EDIT FORM -->
+            <div id="edit-fields">
+                <h3 style="color:var(--gold); font-family:'Playfair Display'; margin-bottom:15px;">Update Product</h3>
+                <input type="text" id="e-name" class="edit-input" placeholder="Product Name">
+                <input type="number" id="e-price" class="edit-input" placeholder="Price (₵)" step="0.01">
+                <input type="number" id="e-stock" class="edit-input" placeholder="Stock Quantity">
+                <input type="text" id="e-cat" class="edit-input" placeholder="Category">
+                <div class="modal-btns">
+                    <button class="btn-edit" onclick="handleUpdate()">Save Updates</button>
+                    <button class="cancel-btn" onclick="hideEdit()" style="background:transparent; border:1px solid #444; color:#888; border-radius:12px; cursor:pointer;">Cancel</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <div id="admin-content">
     <div class="top-bar">
-        <div class="menu-trigger" onclick="toggleSidebar()"><i class="fa-solid fa-bars-staggered"></i></div>
-        <div style="font-family: 'Playfair Display'; color: var(--gold);">ECO<span>MARKET</span></div>
+        <div class="menu-trigger" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars-staggered"></i>
+            <span class="menu-label">Menu</span>
+        </div>
+        <div style="font-family: 'Playfair Display'; color: var(--gold); font-weight:bold;">ECO<span>MARKET</span></div>
         <div style="width: 25px;"></div>
     </div>
 
     <h2>Shop Inventory</h2>
-    <input type="text" id="search-input" placeholder="Search products...">
+    <input type="text" id="search-input" placeholder="Search by name or ID...">
 
-    <div class="table-container">
-        <table>
-            <thead><tr><th>Image</th><th>ID</th><th>Name</th><th>Price</th><th>Stock</th><th>Action</th></tr></thead>
-            <tbody id="inventory-list"></tbody>
-        </table>
+    <div class="inventory-grid" id="inventory-list">
+        <!-- Folders will be injected here -->
     </div>
 </div>
 
@@ -136,7 +183,8 @@
         document.getElementById('overlay').classList.toggle('active');
     };
 
-    let products = [];
+    let products = [], selectedID = null;
+
     onSnapshot(collection(db, `${userPrefix}_products`), snap => {
         products = snap.docs.map(doc => ({ firebaseID: doc.id, ...doc.data() }));
         render();
@@ -146,57 +194,75 @@
         const list = document.getElementById('inventory-list');
         const term = document.getElementById('search-input').value.toLowerCase();
         
-        list.innerHTML = products.filter(p => p.name.toLowerCase().includes(term)).map(p => `
-            <tr>
-                <td data-label="Image"><img src="${p.image}" class="prod-img"></td>
-                <td data-label="ID" style="color:var(--gold); font-family:monospace;">${p.productID}</td>
-                <td data-label="Name"><b>${p.name}</b><br><small>${p.category}</small></td>
-                <td data-label="Price">₵${p.price.toFixed(2)}</td>
-                <td data-label="Stock">
-                    ${p.unlimited ? '<span class="stock-badge stock-infinite">∞ Infinite</span>' : (p.stock <= 0 ? '<span class="stock-badge stock-low">Out</span>' : p.stock)}
-                </td>
-                <td>
-                    <div class="action-btns">
-                        <button class="btn-edit" onclick="openEditModal('${p.firebaseID}')"><i class="fa-solid fa-pen"></i> Edit</button>
-                        <button class="btn-del" onclick="deleteProduct('${p.firebaseID}')"><i class="fa-solid fa-trash"></i></button>
+        list.innerHTML = products.filter(p => p.name.toLowerCase().includes(term) || p.productID.toLowerCase().includes(term)).map(p => {
+            const isOut = !p.unlimited && p.stock <= 0;
+            return `
+                <div class="item-folder" onclick="openModal('${p.firebaseID}')">
+                    <span class="stock-tag ${isOut ? 'tag-out' : 'tag-in'}">${isOut ? 'Out' : 'In Stock'}</span>
+                    <img src="${p.image}" class="folder-img">
+                    <div class="folder-info">
+                        <div class="folder-name">${p.name}</div>
+                        <div class="folder-price">₵${p.price.toFixed(2)}</div>
                     </div>
-                </td>
-            </tr>
-        `).join('');
+                </div>
+            `;
+        }).join('');
     }
 
     document.getElementById('search-input').oninput = render;
 
-    // EDIT LOGIC
-    window.openEditModal = (id) => {
-        const p = products.find(prod => prod.firebaseID === id);
-        document.getElementById('edit-id').value = id;
-        document.getElementById('edit-name').value = p.name;
-        document.getElementById('edit-price').value = p.price;
-        document.getElementById('edit-stock').value = p.stock;
-        document.getElementById('edit-cat').value = p.category;
-        document.getElementById('editModal').style.display = 'flex';
+    // MODAL LOGIC
+    window.openModal = (id) => {
+        selectedID = id;
+        const p = products.find(x => x.firebaseID === id);
+        document.getElementById('m-img').src = p.image;
+        document.getElementById('m-name').innerText = p.name;
+        document.getElementById('m-id').innerText = "PRODUCT ID: " + p.productID;
+        document.getElementById('m-price').innerText = "₵" + p.price.toFixed(2);
+        document.getElementById('m-stock').innerText = p.unlimited ? "STOCK: ∞" : "STOCK: " + p.stock;
+        document.getElementById('m-cat').innerText = "Category: " + p.category;
+        
+        // Prep Edit fields
+        document.getElementById('e-name').value = p.name;
+        document.getElementById('e-price').value = p.price;
+        document.getElementById('e-stock').value = p.stock;
+        document.getElementById('e-cat').value = p.category;
+
+        document.getElementById('detailModal').style.display = 'flex';
+        hideEdit();
     };
 
-    window.closeModal = () => document.getElementById('editModal').style.display = 'none';
+    window.closeModal = () => { document.getElementById('detailModal').style.display = 'none'; };
 
-    window.updateProduct = async () => {
-        const id = document.getElementById('edit-id').value;
+    window.showEdit = () => {
+        document.getElementById('view-fields').style.display = 'none';
+        document.getElementById('edit-fields').style.display = 'block';
+    };
+
+    window.hideEdit = () => {
+        document.getElementById('view-fields').style.display = 'block';
+        document.getElementById('edit-fields').style.display = 'none';
+    };
+
+    window.handleUpdate = async () => {
         const data = {
-            name: document.getElementById('edit-name').value,
-            price: parseFloat(document.getElementById('edit-price').value),
-            stock: parseInt(document.getElementById('edit-stock').value),
-            category: document.getElementById('edit-cat').value
+            name: document.getElementById('e-name').value,
+            price: parseFloat(document.getElementById('e-price').value),
+            stock: parseInt(document.getElementById('e-stock').value),
+            category: document.getElementById('e-cat').value
         };
         try {
-            await updateDoc(doc(db, `${userPrefix}_products`, id), data);
+            await updateDoc(doc(db, `${userPrefix}_products`, selectedID), data);
             closeModal();
-            alert("Updated!");
-        } catch (e) { alert("Update failed"); }
+            alert("Updated Successfully!");
+        } catch (e) { alert("Error updating"); }
     };
 
-    window.deleteProduct = async (id) => {
-        if(confirm("Delete this item?")) await deleteDoc(doc(db, `${userPrefix}_products`, id));
+    window.handleDelete = async () => {
+        if(confirm("Permanently delete this item?")) {
+            await deleteDoc(doc(db, `${userPrefix}_products`, selectedID));
+            closeModal();
+        }
     };
 </script>
 </body>
