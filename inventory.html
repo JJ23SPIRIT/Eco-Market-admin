@@ -11,74 +11,54 @@
         
         body { font-family: 'Poppins', sans-serif; background: var(--black); color: white; margin: 0; overflow-x: hidden; }
 
-        /* Compact Top Bar */
-        .top-bar { 
-            background: var(--forest); padding: 10px 5%; display: flex; 
-            justify-content: space-between; align-items: center; 
-            border-bottom: 1px solid var(--gold); position: sticky; top: 0; z-index: 500;
-        }
+        /* Top Bar & Sidebar */
+        .top-bar { background: var(--forest); padding: 12px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gold); position: sticky; top: 0; z-index: 500; }
         .menu-trigger { color: var(--gold); font-size: 1.3rem; cursor: pointer; }
-        .top-logo { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.1rem; }
-
-        /* Sliding Sidebar */
-        .sidebar {
-            position: fixed; top: 0; left: -300px; width: 260px; height: 100vh;
-            background: rgba(1, 50, 32, 0.98); backdrop-filter: blur(15px);
-            z-index: 2000; transition: 0.4s ease;
-            padding: 30px 20px; border-right: 1px solid var(--gold);
-            display: flex; flex-direction: column;
-        }
+        .sidebar { position: fixed; top: 0; left: -300px; width: 260px; height: 100vh; background: rgba(1, 50, 32, 0.98); backdrop-filter: blur(15px); z-index: 2000; transition: 0.4s ease; padding: 30px 20px; border-right: 1px solid var(--gold); display: flex; flex-direction: column; }
         .sidebar.active { left: 0; }
-        .sidebar-header { text-align: center; margin-bottom: 30px; }
-        .profile-circle {
-            width: 60px; height: 60px; background: var(--gold); color: var(--forest);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; font-weight: 800; margin: 0 auto 10px; border: 2px solid rgba(255,255,255,0.1);
-        }
-        .sidebar-biz-name { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1rem; }
-        .nav-link { 
-            display: flex; align-items: center; gap: 12px; padding: 12px;
-            color: #ccc; text-decoration: none; border-radius: 10px;
-            margin-bottom: 5px; transition: 0.2s; font-size: 0.85rem;
-        }
-        .nav-link i { color: var(--gold); width: 18px; text-align: center; }
-        .nav-link:hover, .nav-link.active { background: rgba(255,215,0,0.1); color: white; }
-
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 14px; color: #ccc; text-decoration: none; border-radius: 10px; margin-bottom: 5px; font-size: 0.85rem; }
+        .nav-link.active { background: rgba(255,215,0,0.1); color: white; }
         .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1500; display: none; }
         .sidebar-overlay.active { display: block; }
 
         /* Content Area */
         #admin-content { padding: 20px 4%; }
-        h2 { font-family: 'Playfair Display', serif; color: var(--gold); text-align: center; font-size: 1.4rem; margin: 0; }
+        h2 { font-family: 'Playfair Display', serif; color: var(--gold); text-align: center; font-size: 1.5rem; margin-bottom: 20px; }
         #search-input { width: 100%; max-width: 500px; padding: 12px 20px; background: var(--glass); border: 1px solid var(--forest); border-radius: 25px; color: white; outline: none; display: block; margin: 15px auto; font-size: 0.85rem; }
 
-        .table-container { background: var(--glass); border-radius: 15px; padding: 15px; border: 1px solid rgba(255,215,0,0.1); overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 850px; }
-        th { padding: 10px; text-align: left; color: var(--gold); border-bottom: 2px solid var(--forest); font-size: 0.65rem; text-transform: uppercase; }
-        td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.8rem; vertical-align: middle; }
+        .table-container { background: var(--glass); border-radius: 15px; padding: 10px; border: 1px solid rgba(255,215,0,0.1); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th { padding: 12px; text-align: left; color: var(--gold); border-bottom: 2px solid var(--forest); font-size: 0.7rem; text-transform: uppercase; }
+        td { padding: 15px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
 
-        .prod-id { font-family: monospace; color: var(--gold); background: rgba(255,215,0,0.1); padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; }
-        .prod-img { width: 40px; height: 40px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,215,0,0.2); }
-        .stock-badge { padding: 3px 8px; border-radius: 5px; font-size: 0.65rem; font-weight: bold; }
+        .prod-img { width: 45px; height: 45px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,215,0,0.2); }
+        .stock-badge { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; }
         .stock-infinite { background: rgba(0, 255, 136, 0.1); color: #00ff88; }
         .stock-low { background: rgba(255, 68, 68, 0.1); color: #ff4444; }
 
-        .del-btn { background: #ff4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 0.7rem; font-weight: 600; }
-        .del-btn:hover { background: white; color: #ff4444; }
+        .action-btns { display: flex; gap: 8px; }
+        .btn-edit { background: var(--gold); color: var(--forest); border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.75rem; font-weight: 700; }
+        .btn-del { background: rgba(255, 68, 68, 0.2); color: #ff4444; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.75rem; }
 
-        /* 📱 OPTIMIZED MOBILE SCALE */
+        /* EDIT MODAL */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 3000; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background: var(--forest); border: 1px solid var(--gold); padding: 25px; border-radius: 20px; width: 100%; max-width: 450px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .modal h3 { color: var(--gold); margin-top: 0; font-family: 'Playfair Display'; }
+        .modal label { display: block; font-size: 0.65rem; color: #aaa; text-transform: uppercase; margin-bottom: 5px; margin-top: 15px; }
+        .modal input, .modal select { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid #444; border-radius: 10px; color: white; outline: none; box-sizing: border-box; }
+        .modal-btns { display: flex; gap: 10px; margin-top: 25px; }
+        .save-btn { flex: 2; background: var(--gold); color: var(--forest); border: none; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; }
+        .cancel-btn { flex: 1; background: transparent; border: 1px solid #444; color: #888; border-radius: 10px; cursor: pointer; }
+
+        /* MOBILE SCALE */
         @media (max-width: 850px) {
-            table { min-width: 100%; }
             th { display: none; }
-            tr { display: block; background: rgba(255,255,255,0.03); margin-bottom: 12px; border-radius: 12px; padding: 12px; border: 1px solid rgba(255,215,0,0.05); }
-            td { display: block; padding: 5px 0; border: none; text-align: left; position: relative; padding-left: 35%; min-height: 25px; }
-            td::before { content: attr(data-label); position: absolute; left: 0; font-weight: 600; color: var(--gold); font-size: 0.6rem; text-transform: uppercase; opacity: 0.7; }
-            td:first-child { padding-left: 0; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 8px; padding-bottom: 12px; }
-            td:first-child::before { display: none; }
-            .prod-img { width: 60px; height: 60px; }
-            td:last-child { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 8px; padding-top: 10px; padding-left: 0; }
-            td:last-child::before { display: none; }
-            .del-btn { width: 100%; padding: 12px; }
+            tr { display: block; background: rgba(255,255,255,0.02); margin-bottom: 12px; border-radius: 15px; padding: 15px; border: 1px solid rgba(255,215,0,0.05); }
+            td { display: block; padding: 8px 0; border: none; position: relative; padding-left: 40%; min-height: 30px; }
+            td::before { content: attr(data-label); position: absolute; left: 0; color: var(--gold); font-size: 0.65rem; font-weight: 700; text-transform: uppercase; }
+            .action-btns { margin-top: 10px; }
+            .action-btns button { flex: 1; padding: 12px; }
+            .prod-img { width: 60px; height: 60px; margin-bottom: 10px; }
         }
     </style>
 </head>
@@ -86,57 +66,60 @@
 
 <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
 <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-        <div class="profile-circle" id="profile-initial">?</div>
-        <div class="sidebar-biz-name" id="display-biz-name">Admin Portal</div>
+    <div style="text-align: center; margin-bottom: 30px;">
+        <div id="profile-initial" style="width: 60px; height: 60px; background: var(--gold); color: var(--forest); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; margin: 0 auto 10px;">?</div>
+        <div id="display-biz-name" style="color: var(--gold); font-family: 'Playfair Display';">Admin</div>
     </div>
-    <nav class="nav-list" style="list-style: none; padding: 0;">
+    <nav>
         <a href="orders.html" class="nav-link"><i class="fa-solid fa-house"></i> Active Orders</a>
         <a href="add_items.html" class="nav-link"><i class="fa-solid fa-plus"></i> Add New Item</a>
-        <a href="#" class="nav-link active" onclick="toggleSidebar()"><i class="fa-solid fa-boxes-stacked"></i> Inventory</a>
-        <a href="completed_orders.html" class="nav-link"><i class="fa-solid fa-check-double"></i> Completed Orders</a>
+        <a href="#" class="nav-link active"><i class="fa-solid fa-boxes-stacked"></i> Inventory</a>
+        <a href="completed_orders.html" class="nav-link"><i class="fa-solid fa-check-double"></i> History</a>
         <a href="profile.html" class="nav-link"><i class="fa-solid fa-user-gear"></i> My Profile</a>
     </nav>
-    <a href="#" class="nav-link" onclick="localStorage.removeItem('eco_user_prefix'); location.href='index.html'" style="margin-top: auto; color: #ff4444; text-decoration: none;"><i class="fa-solid fa-power-off"></i> Logout</a>
 </aside>
 
-<div class="top-bar">
-    <div class="menu-trigger" onclick="toggleSidebar()"><i class="fa-solid fa-bars-staggered"></i></div>
-    <div class="top-logo">ECO<span>MARKET</span></div>
-    <div style="width: 20px;"></div>
+<!-- Edit Modal -->
+<div class="modal" id="editModal">
+    <div class="modal-content">
+        <h3>Edit Product</h3>
+        <input type="hidden" id="edit-id">
+        <label>Product Name</label>
+        <input type="text" id="edit-name">
+        <div style="display: flex; gap: 10px;">
+            <div style="flex: 1;"><label>Price (₵)</label><input type="number" id="edit-price" step="0.01"></div>
+            <div style="flex: 1;"><label>Stock</label><input type="number" id="edit-stock"></div>
+        </div>
+        <label>Category</label>
+        <input type="text" id="edit-cat">
+        <div class="modal-btns">
+            <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+            <button class="save-btn" onclick="updateProduct()">Save Changes</button>
+        </div>
+    </div>
 </div>
 
 <div id="admin-content">
-    <h2 style="margin-top:10px">Shop Inventory</h2>
-    <input type="text" id="search-input" placeholder="Search by name, ID or category...">
+    <div class="top-bar">
+        <div class="menu-trigger" onclick="toggleSidebar()"><i class="fa-solid fa-bars-staggered"></i></div>
+        <div style="font-family: 'Playfair Display'; color: var(--gold);">ECO<span>MARKET</span></div>
+        <div style="width: 25px;"></div>
+    </div>
+
+    <h2>Shop Inventory</h2>
+    <input type="text" id="search-input" placeholder="Search products...">
 
     <div class="table-container">
         <table>
-            <thead>
-                <tr>
-                    <th>Image</th>
-                    <th>ID</th>
-                    <th>Product</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>Stock</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
+            <thead><tr><th>Image</th><th>ID</th><th>Name</th><th>Price</th><th>Stock</th><th>Action</th></tr></thead>
             <tbody id="inventory-list"></tbody>
         </table>
     </div>
 </div>
 
 <script type="module">
-    // At the top of your module scripts
-    const activePrefix = localStorage.getItem('eco_user_prefix');
-    if(!activePrefix) window.location.href = 'login.html';
-
-    document.getElementById('display-biz-name').innerText = localStorage.getItem('eco_biz_name');
-    document.getElementById('profile-initial').innerText = localStorage.getItem('eco_user_initial');
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, doc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
     const firebaseConfig = { apiKey: "AIzaSyDtPxmJUBCweFBswJVflEVuc4jp6-m0BVM", authDomain: "prime-dusk.firebaseapp.com", projectId: "prime-dusk" };
     const app = initializeApp(firebaseConfig);
@@ -145,65 +128,75 @@
     const userPrefix = localStorage.getItem('eco_user_prefix');
     if(!userPrefix) window.location.href = 'index.html';
 
+    document.getElementById('display-biz-name').innerText = localStorage.getItem('eco_biz_name');
+    document.getElementById('profile-initial').innerText = localStorage.getItem('eco_user_initial');
+
     window.toggleSidebar = () => {
         document.getElementById('sidebar').classList.toggle('active');
         document.getElementById('overlay').classList.toggle('active');
     };
 
-    async function loadHeader() {
-        const userSnap = await getDoc(doc(db, "users", userPrefix));
-        if(userSnap.exists()) {
-            const data = userSnap.data();
-            document.getElementById('display-biz-name').innerText = data.business.name;
-            document.getElementById('profile-initial').innerText = data.personal.fname[0].toUpperCase();
-        }
-    }
-    loadHeader();
-
-    let masterProducts = [];
+    let products = [];
     onSnapshot(collection(db, `${userPrefix}_products`), snap => {
-        masterProducts = snap.docs.map(doc => ({ firebaseID: doc.id, ...doc.data() }));
-        renderTable(masterProducts);
+        products = snap.docs.map(doc => ({ firebaseID: doc.id, ...doc.data() }));
+        render();
     });
 
-    function renderTable(products) {
+    function render() {
         const list = document.getElementById('inventory-list');
-        list.innerHTML = "";
         const term = document.getElementById('search-input').value.toLowerCase();
-
-        const filtered = products.filter(p => 
-            (p.name && p.name.toLowerCase().includes(term)) ||
-            (p.productID && p.productID.toLowerCase().includes(term)) ||
-            (p.category && p.category.toLowerCase().includes(term))
-        );
-
-        list.innerHTML = filtered.map(p => {
-            const stockDisplay = p.unlimited ? 
-                '<span class="stock-badge stock-infinite">∞ Infinite</span>' : 
-                (p.stock <= 0 ? '<span class="stock-badge stock-low">SOLD OUT</span>' : p.stock);
-
-            return `<tr>
-                <td><img src="${p.image}" class="prod-img" onerror="this.src='https://via.placeholder.com/50'"></td>
-                <td data-label="ID"><span class="prod-id">${p.productID || 'N/A'}</span></td>
-                <td data-label="Name"><strong>${p.name}</strong></td>
-                <td data-label="Category">${p.category}</td>
+        
+        list.innerHTML = products.filter(p => p.name.toLowerCase().includes(term)).map(p => `
+            <tr>
+                <td data-label="Image"><img src="${p.image}" class="prod-img"></td>
+                <td data-label="ID" style="color:var(--gold); font-family:monospace;">${p.productID}</td>
+                <td data-label="Name"><b>${p.name}</b><br><small>${p.category}</small></td>
                 <td data-label="Price">₵${p.price.toFixed(2)}</td>
-                <td data-label="Stock">${stockDisplay}</td>
-                <td>
-                    <button class="del-btn" onclick="deleteProduct('${p.firebaseID}')">
-                        <i class="fa-solid fa-trash-can"></i> Remove
-                    </button>
+                <td data-label="Stock">
+                    ${p.unlimited ? '<span class="stock-badge stock-infinite">∞ Infinite</span>' : (p.stock <= 0 ? '<span class="stock-badge stock-low">Out</span>' : p.stock)}
                 </td>
-            </tr>`;
-        }).join('');
+                <td>
+                    <div class="action-btns">
+                        <button class="btn-edit" onclick="openEditModal('${p.firebaseID}')"><i class="fa-solid fa-pen"></i> Edit</button>
+                        <button class="btn-del" onclick="deleteProduct('${p.firebaseID}')"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
     }
 
-    document.getElementById('search-input').addEventListener('input', () => renderTable(masterProducts));
+    document.getElementById('search-input').oninput = render;
+
+    // EDIT LOGIC
+    window.openEditModal = (id) => {
+        const p = products.find(prod => prod.firebaseID === id);
+        document.getElementById('edit-id').value = id;
+        document.getElementById('edit-name').value = p.name;
+        document.getElementById('edit-price').value = p.price;
+        document.getElementById('edit-stock').value = p.stock;
+        document.getElementById('edit-cat').value = p.category;
+        document.getElementById('editModal').style.display = 'flex';
+    };
+
+    window.closeModal = () => document.getElementById('editModal').style.display = 'none';
+
+    window.updateProduct = async () => {
+        const id = document.getElementById('edit-id').value;
+        const data = {
+            name: document.getElementById('edit-name').value,
+            price: parseFloat(document.getElementById('edit-price').value),
+            stock: parseInt(document.getElementById('edit-stock').value),
+            category: document.getElementById('edit-cat').value
+        };
+        try {
+            await updateDoc(doc(db, `${userPrefix}_products`, id), data);
+            closeModal();
+            alert("Updated!");
+        } catch (e) { alert("Update failed"); }
+    };
 
     window.deleteProduct = async (id) => {
-        if(confirm("Permanently remove this product?")) {
-            await deleteDoc(doc(db, `${userPrefix}_products`, id));
-        }
+        if(confirm("Delete this item?")) await deleteDoc(doc(db, `${userPrefix}_products`, id));
     };
 </script>
 </body>

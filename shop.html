@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoMarket | Shop Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --forest: #013220; --gold: #FFD700; --white: #fff; --bg: #f4f4f4; --glass-dark: rgba(0,0,0,0.85); }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            display: flex; 
+            background: var(--bg); 
+            flex-direction: row;
+        }
+
+        /* Access Overlay */
+        #shop-lock { position: fixed; inset: 0; background: var(--forest); z-index: 6000; display: flex; justify-content: center; align-items: center; color: white; text-align: center; }
+        .lock-box { background: rgba(255,255,255,0.05); padding: 30px; border-radius: 30px; border: 1px solid var(--gold); width: 90%; max-width: 450px; backdrop-filter: blur(10px); }
+        
+        /* Sidebar (Responsive) */
+        aside { 
+            width: 280px; height: 100vh; background: var(--forest); color: white; 
+            padding: 30px 20px; position: fixed; left: 0; top: 0; overflow-y: auto; 
+            z-index: 1000; transition: 0.3s;
+        }
+        
+        .vendor-card { text-align: center; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; margin-bottom: 25px; border: 1px solid rgba(255,215,0,0.1); }
+        
+        /* Profile Initial/Logo Styling */
+        #vendor-pic-container { 
+            width: 80px; height: 80px; margin: 0 auto 10px; 
+            border-radius: 50%; border: 2px solid var(--gold); 
+            overflow: hidden; display: flex; align-items: center; justify-content: center;
+            background: #000;
+        }
+        #vendor-pic-container img { width: 100%; height: 100%; object-fit: cover; }
+        .shop-initial { font-size: 2.2rem; font-weight: 800; color: var(--gold); font-family: 'Playfair Display', serif; }
+
+        .cat-link { display: block; padding: 12px 15px; color: #aaa; text-decoration: none; border-radius: 10px; margin-bottom: 8px; cursor: pointer; transition: 0.3s; font-size: 0.85rem; white-space: nowrap; }
+        .cat-link.active { background: rgba(255,215,0,0.1); color: var(--gold); font-weight: 600; }
+
+        /* Main Grid */
+        main { flex: 1; margin-left: 280px; padding: 40px; padding-bottom: 120px; min-height: 100vh; width: 100%; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+
+        .card { background: white; border-radius: 20px; overflow: hidden; position: relative; border: 1px solid #eee; transition: 0.3s; }
+        .card img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+        
+        .view-details-btn { position: absolute; top: 12px; right: 12px; background: white; color: var(--forest); width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 10; }
+        .card-body { padding: 12px; text-align: center; }
+        .price { color: var(--forest); font-weight: 800; font-size: 1rem; margin-top: 4px; }
+
+        /* Modals */
+        .modal { display: none; position: fixed; inset: 0; background: var(--glass-dark); z-index: 5000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(10px); }
+        .modal-card { background: white; width: 100%; max-width: 900px; max-height: 90vh; border-radius: 25px; overflow: hidden; display: flex; animation: zoomIn 0.3s ease; position: relative; }
+        
+        .details-media { flex: 1.2; background: #000; display: flex; flex-direction: column; min-height: 300px; }
+        .main-viewer { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #000; }
+        .main-viewer img, .main-viewer video { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .media-thumbs { display: flex; gap: 8px; padding: 10px; background: #111; overflow-x: auto; }
+        .thumb { width: 50px; height: 50px; border-radius: 6px; cursor: pointer; object-fit: cover; border: 2px solid transparent; opacity: 0.5; flex-shrink: 0; }
+        .thumb.active { border-color: var(--gold); opacity: 1; }
+
+        .details-info { flex: 1; padding: 25px; overflow-y: auto; color: #333; }
+        .close-btn { position: absolute; top: 15px; right: 15px; font-size: 1.3rem; cursor: pointer; color: #888; z-index: 100; background: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+
+        /* Cart Bar */
+        #cart-bar { position: fixed; bottom: -100px; left: 280px; right: 0; background: var(--forest); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; transition: 0.5s; z-index: 1000; box-shadow: 0 -5px 20px rgba(0,0,0,0.2); }
+        #cart-bar.active { bottom: 0; }
+
+        /* Search Autocomplete */
+        .search-wrapper { position: relative; width: 100%; margin-bottom: 20px; }
+        #shop-input { width: 100%; padding: 15px; border-radius: 12px; border: none; text-align: center; font-size: 1rem; outline: none; }
+        #suggestions { position: absolute; top: 100%; left: 0; right: 0; background: white; color: #333; border-radius: 12px; margin-top: 5px; max-height: 200px; overflow-y: auto; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 100; }
+        .suggest-item { padding: 12px 20px; text-align: left; cursor: pointer; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
+
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        /* 📱 MOBILE OVERRIDES */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            aside { width: 100%; height: auto; position: relative; padding: 15px; border-bottom: 1px solid var(--gold); border-right: none; }
+            .vendor-card { display: flex; align-items: center; text-align: left; padding: 12px; gap: 15px; margin-bottom: 15px; }
+            #vendor-pic-container { width: 50px; height: 50px; margin-bottom: 0; }
+            .shop-initial { font-size: 1.4rem; }
+            .vendor-card h2 { font-size: 1rem; }
+            .vendor-card p { display: none; }
+            #category-container { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 5px; scrollbar-width: none; }
+            #category-container::-webkit-scrollbar { display: none; }
+            .cat-link { margin-bottom: 0; padding: 8px 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,215,0,0.1); border-radius: 20px; font-size: 0.75rem; }
+            main { margin-left: 0; padding: 15px; padding-bottom: 100px; }
+            .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .card-body h4 { font-size: 0.85rem; }
+            .price { font-size: 0.9rem; }
+            .modal-card { flex-direction: column; max-height: 95vh; }
+            .details-media { min-height: 250px; flex: none; }
+            .details-info { padding: 20px; }
+            .details-info h2 { font-size: 1.3rem; }
+            #cart-bar { left: 0; padding: 12px 20px; font-size: 0.8rem; }
+            .action-btn { padding: 10px 15px; font-size: 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="shop-lock">
+        <div class="lock-box">
+            <h1 style="font-family: 'Playfair Display', serif; color: var(--gold); margin-bottom: 10px;">EcoMarket</h1>
+            <p style="margin-bottom: 20px; color: #ccc; font-size: 0.8rem;">Enter Shop Name or 6-digit Code</p>
+            <div class="search-wrapper">
+                <input type="text" id="shop-input" placeholder="Search for a store..." autocomplete="off">
+                <div id="suggestions"></div>
+            </div>
+            <button onclick="unlockShop()" style="background:var(--gold); color:var(--forest); padding:15px; border-radius:30px; border:none; font-weight:800; cursor:pointer; width:100%;">Open Store</button>
+        </div>
+    </div>
+
+    <aside id="sidebar" style="display:none">
+        <div class="vendor-card">
+            <div id="vendor-pic-container">
+                <!-- Image or Initial will be injected here -->
+            </div>
+            <div>
+                <h2 id="biz-name">Shop Name</h2>
+                <p id="biz-info"></p>
+            </div>
+        </div>
+        <div id="category-container"></div>
+    </aside>
+
+    <main id="main-content" style="display:none">
+        <div class="grid" id="product-grid"></div>
+    </main>
+
+    <!-- Details Modal -->
+    <div id="details-modal" class="modal">
+        <div class="modal-card">
+            <i class="fa-solid fa-xmark close-btn" onclick="closeModal('details-modal')"></i>
+            <div class="details-media">
+                <div class="main-viewer" id="main-viewer"></div>
+                <div class="media-thumbs" id="media-thumbs"></div>
+            </div>
+            <div class="details-info">
+                <h2 id="det-name" style="font-family: 'Playfair Display', serif;"></h2>
+                <div style="font-size: 1.4rem; color: var(--forest); font-weight: 800; margin: 10px 0;" id="det-price"></div>
+                <label style="font-size:0.65rem; color:var(--gold); font-weight:700; letter-spacing: 1px;">DESCRIPTION</label>
+                <p id="det-desc" style="margin-bottom: 20px; font-size: 0.9rem; color: #666;"></p>
+                <button id="det-add-btn" style="width:100%; padding:15px; border-radius:12px; background:var(--forest); color:white; font-weight:700; border:none; cursor:pointer;">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Preview Modal -->
+    <div id="preview-modal" class="modal">
+        <div class="modal-card" style="background: var(--forest); color: white; border: 1px solid var(--gold); max-width: 450px; flex-direction: column; padding: 25px;">
+            <i class="fa-solid fa-xmark close-btn" onclick="closeModal('preview-modal')"></i>
+            <h2 style="font-family: 'Playfair Display', serif; color: var(--gold); margin-bottom: 20px; text-align: center;">Cart Summary</h2>
+            <div id="preview-list" style="max-height: 350px; overflow-y: auto; margin-bottom: 20px;"></div>
+            <div style="border-top: 1px dashed rgba(255,215,0,0.3); padding-top: 15px; display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem;">
+                <span>Total:</span> <span id="preview-total" style="color:var(--gold)">₵0.00</span>
+            </div>
+            <button onclick="window.location.href='checkout.html'" style="margin-top:20px; background:var(--gold); color:var(--forest); padding:15px; border-radius:12px; border:none; font-weight:800; cursor:pointer; width: 100%;">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <div id="cart-bar">
+        <div><span id="total-items">0 Items</span> | <span id="total-price" style="color:var(--gold); font-weight:800">₵0.00</span></div>
+        <div style="display: flex; gap: 8px;">
+            <button class="action-btn" style="background:white; color:var(--forest)" onclick="showCartPreview()">Preview</button>
+            <button class="action-btn" style="background:var(--gold); color:var(--forest)" onclick="window.location.href='checkout.html'">Checkout</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyDtPxmJUBCweFBswJVflEVuc4jp6-m0BVM", authDomain: "prime-dusk.firebaseapp.com", projectId: "prime-dusk" };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let allProducts = [], cart = {}, storePrefix = "";
+        let masterShopList = [];
+
+        // 1. Pre-fetch shop names
+        (async () => {
+            const snap = await getDocs(collection(db, "users"));
+            masterShopList = snap.docs.map(doc => ({
+                name: doc.data().business.name,
+                code: doc.data().adminCode,
+                username: doc.id
+            }));
+        })();
+
+        // 2. Autocomplete
+        const input = document.getElementById('shop-input');
+        const suggestBox = document.getElementById('suggestions');
+
+        input.addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            suggestBox.innerHTML = "";
+            if(!val) { suggestBox.style.display = "none"; return; }
+            const filtered = masterShopList.filter(s => s.name.toLowerCase().includes(val) || s.code.toString().includes(val));
+            if(filtered.length > 0) {
+                filtered.forEach(shop => {
+                    const div = document.createElement('div');
+                    div.className = "suggest-item";
+                    div.innerHTML = `<i class="fa-solid fa-store" style="color:var(--gold)"></i> <span>${shop.name}</span> <small style="margin-left:auto; color:#999">${shop.code}</small>`;
+                    div.onclick = () => { input.value = shop.name; suggestBox.style.display = "none"; unlockShop(shop.username); };
+                    suggestBox.appendChild(div);
+                });
+                suggestBox.style.display = "block";
+            } else { suggestBox.style.display = "none"; }
+        });
+
+        // 3. Unlock Store
+        window.unlockShop = async (directUsername = null) => {
+            const val = input.value.trim();
+            if(!val && !directUsername) return;
+
+            let adminData = null;
+            if(directUsername) {
+                const snap = await getDoc(doc(db, "users", directUsername));
+                adminData = snap.data();
+            } else {
+                let q = (!isNaN(val) && val.length === 6) ? 
+                    query(collection(db, "users"), where("adminCode", "==", parseInt(val))) : 
+                    query(collection(db, "users"), where("business.name", "==", val));
+                const snap = await getDocs(q);
+                if(!snap.empty) adminData = snap.docs[0].data();
+            }
+
+            if(adminData) {
+                storePrefix = adminData.username;
+                localStorage.setItem('eco_shop_prefix', storePrefix);
+                
+                // Handle Profile Pic or Initial
+                const picContainer = document.getElementById('vendor-pic-container');
+                if(adminData.profilePic) {
+                    picContainer.innerHTML = `<img src="${adminData.profilePic}">`;
+                } else {
+                    const initial = adminData.business.name.charAt(0).toUpperCase();
+                    picContainer.innerHTML = `<div class="shop-initial">${initial}</div>`;
+                }
+
+                document.getElementById('biz-name').innerText = adminData.business.name;
+                document.getElementById('biz-info').innerText = adminData.business.info || "";
+                
+                document.getElementById('shop-lock').style.display = "none";
+                document.getElementById('sidebar').style.display = "block";
+                document.getElementById('main-content').style.display = "block";
+                startListeners();
+            } else { alert("Store not found!"); }
+        };
+
+        function startListeners() {
+            onSnapshot(collection(db, `${storePrefix}_categories`), snap => {
+                const cont = document.getElementById('category-container');
+                cont.innerHTML = `<div class="cat-link active" onclick="renderProducts('All', this)">All Collection</div>`;
+                snap.docs.forEach(doc => {
+                    cont.innerHTML += `<div class="cat-link" onclick="renderProducts('${doc.data().name}', this)">${doc.data().name}</div>`;
+                });
+            });
+            onSnapshot(collection(db, `${storePrefix}_products`), snap => {
+                allProducts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderProducts('All');
+            });
+        }
+
+        window.renderProducts = (cat, element) => {
+            if(element) {
+                document.querySelectorAll('.cat-link').forEach(l => l.classList.remove('active'));
+                element.classList.add('active');
+            }
+            const list = cat === 'All' ? allProducts : allProducts.filter(p => p.category === cat);
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = list.map(p => {
+                const qty = cart[p.id] || 0;
+                return `
+                <div class="card">
+                    <div class="view-details-btn" onclick="openDetails('${p.id}')"><i class="fa-solid fa-eye"></i></div>
+                    <img src="${p.image}">
+                    <div class="card-body">
+                        <h4>${p.name}</h4>
+                        <div class="price">₵${p.price.toFixed(2)}</div>
+                        <div style="display:flex; justify-content:center; align-items:center; gap:10px; margin-top:8px;">
+                            <button onclick="updateCart('${p.id}', -1)" style="width:28px; height:28px; border-radius:50%; border:1px solid #ddd; background:white; cursor:pointer">-</button>
+                            <span id="qty-${p.id}" style="font-weight:700; font-size:0.9rem;">${qty}</span>
+                            <button onclick="updateCart('${p.id}', 1)" style="width:28px; height:28px; border-radius:50%; border:1px solid #ddd; background:white; cursor:pointer">+</button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        };
+
+        window.openDetails = (id) => {
+            const p = allProducts.find(x => x.id === id);
+            document.getElementById('det-name').innerText = p.name;
+            document.getElementById('det-price').innerText = `₵${p.price.toFixed(2)}`;
+            document.getElementById('det-desc').innerText = p.description || "No description available.";
+            const viewer = document.getElementById('main-viewer');
+            const thumbs = document.getElementById('media-thumbs');
+            viewer.innerHTML = `<img src="${p.image}">`;
+            let thumbHtml = `<img src="${p.image}" class="thumb active" onclick="changeMedia('${p.image}', 'img', this)">`;
+            if(p.extraImages) p.extraImages.forEach(url => thumbHtml += `<img src="${url}" class="thumb" onclick="changeMedia('${url}', 'img', this)">`);
+            if(p.video) thumbHtml += `<div class="thumb" style="display:flex;align-items:center;justify-content:center;background:#222;color:white" onclick="changeMedia('${p.video}', 'video', this)">▶</div>`;
+            thumbs.innerHTML = thumbHtml;
+            document.getElementById('det-add-btn').onclick = () => { updateCart(p.id, 1); closeModal('details-modal'); };
+            document.getElementById('details-modal').style.display = "flex";
+        };
+
+        window.changeMedia = (url, type, el) => {
+            document.getElementById('main-viewer').innerHTML = type === 'video' ? `<video src="${url}" controls autoplay></video>` : `<img src="${url}">`;
+            document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        };
+
+        window.showCartPreview = () => {
+            const list = document.getElementById('preview-list');
+            let total = 0; list.innerHTML = "";
+            Object.keys(cart).forEach(id => {
+                const p = allProducts.find(x => x.id === id);
+                const itemTotal = p.price * cart[id]; total += itemTotal;
+                list.innerHTML += `<div style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.05); padding:10px; border-radius:12px; margin-bottom:10px;"><img src="${p.image}" style="width:40px; height:40px; border-radius:8px; object-fit:cover;"><div style="flex:1; font-size:0.8rem;"><b>${p.name}</b><br>Qty: ${cart[id]}</div><div style="color:var(--gold); font-size:0.8rem;">₵${itemTotal.toFixed(2)}</div></div>`;
+            });
+            document.getElementById('preview-total').innerText = `₵${total.toFixed(2)}`;
+            document.getElementById('preview-modal').style.display = "flex";
+        };
+
+        window.updateCart = (id, change) => {
+            const p = allProducts.find(x => x.id === id);
+            let next = (cart[id] || 0) + change;
+            if(next < 0) next = 0;
+            if(!p.unlimited && next > p.stock) { alert("Out of stock!"); return; }
+            if(next === 0) delete cart[id]; else cart[id] = next;
+            if(document.getElementById(`qty-${id}`)) document.getElementById(`qty-${id}`).innerText = next;
+            updateUI();
+        };
+
+        function updateUI() {
+            let count = 0, total = 0;
+            Object.keys(cart).forEach(id => {
+                const p = allProducts.find(x => x.id === id);
+                count += cart[id]; total += p.price * cart[id];
+            });
+            document.getElementById('total-items').innerText = `${count} Items`;
+            document.getElementById('total-price').innerText = `₵${total.toFixed(2)}`;
+            document.getElementById('cart-bar').classList.toggle('active', count > 0);
+            localStorage.setItem('eco_cart', JSON.stringify(Object.keys(cart).map(id => {
+                const p = allProducts.find(x => x.id === id);
+                return { name: p.name, price: p.price, qty: cart[id], id: p.productID, image: p.image };
+            })));
+        }
+
+        window.closeModal = (mId) => document.getElementById(mId).style.display = "none";
+    </script>
+</body>
+</html>
